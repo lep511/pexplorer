@@ -1,0 +1,4 @@
+import sys
+
+sys.path.append(r'C:\Users\Esteban.Esteban-PC\OneDrive\Python\00-PACKAGES\PANDAS')
+import pexplorer as px
