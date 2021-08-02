@@ -1,1 +1,1 @@
-# PandasExplorer
+# Pandas Explorer
