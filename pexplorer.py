@@ -1,46 +1,54 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import sys
+import pandas as __pd
+import numpy as __np
+import matplotlib.pyplot as __plt
+import seaborn as __sns
+import sys as __sys
 
 def check_df(dataframe):
     
     df = dataframe.copy()
     
     df_drop = df.dropna()
-    is_num = df_drop.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
-    col_names = []
-    v_type = []
-    count_uniq = []
-    v_null = []
-    v_no_null = []
-    val_max = []
-    val_min = []
-    val_mean = []
-    val_std = []
-    val_25 = []
-    val_50 = []
-    val_75 = []
-    binary_val = []
+    is_num = df_drop.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
+    
+    col_names, v_type, count_uniq, v_null = [], [], [], []
+    val_max, val_min, val_mean, val_std  = [], [], [], []
+    val_25, val_50, val_75, binary_val = [], [], [], []
+    
     len_df = len(df)
     
     for feature in df.columns:
         col_names.append(feature)
         v_type.append(str(df[feature].dtype))
+        
         count_uniq.append(len(df[feature].unique()))
         val_n = df[feature].isnull().sum() / len_df
         v_null.append(val_n)
-        is_bool = pd.api.types.is_bool_dtype(df[feature])
+        is_bool = __pd.api.types.is_bool_dtype(df[feature])
+        is_null = len(df[feature].dropna())
     
-        if is_num[feature] and not is_bool:
-            val_max.append(df[feature].max())
-            val_min.append(df[feature].min())
-            val_mean.append(df[feature].mean())
-            val_std.append(df[feature].std())
-            val_25.append(np.percentile(df_drop[feature], 25))
-            val_50.append(np.percentile(df_drop[feature], 50))
-            val_75.append(np.percentile(df_drop[feature], 75))
+        if is_num[feature] and not is_bool and is_null > 0:
+            
+            try:
+                max_v = df[feature].max()
+                min_v = df[feature].min()
+                mea_v = df[feature].mean()
+                std_v = df[feature].std()
+                p25_v = __np.nanpercentile(df[feature], 25)
+                p50_v = __np.nanpercentile(df[feature], 50)
+                p75_v = __np.nanpercentile(df[feature], 75)
+                      
+            except:
+                max_v, min_v, mea_v, std_v = "-", "-", "-", "-"
+                p25_v, p50_v, p75_v = "-", "-", "-"
+             
+            val_max.append(max_v)
+            val_min.append(min_v)
+            val_mean.append(mea_v)
+            val_std.append(std_v)
+            val_25.append(p25_v)
+            val_50.append(p50_v)
+            val_75.append(p75_v)
             
             val_unic_temp = df[feature].unique().tolist()
             bi_temp = "-"
@@ -95,7 +103,7 @@ def check_df(dataframe):
     for num in nr_col:
         ran_col.append(str(num+1) + ")")
     
-    data = {"N.": ran_col,
+    data = {"Num.": ran_col,
         "col. name": col_names,
         "type": v_type,
         "unique": count_uniq,
@@ -107,15 +115,16 @@ def check_df(dataframe):
         "max": val_max,
         "mean": val_mean,
         "std": val_std,
-        "binary_values": binary_val
+        "binary values": binary_val
     }
 
-    df_new = pd.DataFrame(data=data)
-    df_new = df_new.set_index('N.')
+    df_new = __pd.DataFrame(data=data)
+    df_new = df_new.set_index('Num.')
     
-    cm = sns.light_palette("green", as_cmap=True)
-
-    return df_new.style.background_gradient(cmap=cm)
+    cm = __sns.light_palette("green", as_cmap=True)
+    text_indx = str(__pd.RangeIndex(df.index))
+    
+    return df_new.style.background_gradient(cmap=cm).set_caption(text_indx)
 
 
 def col_rename(dataframe):
@@ -145,7 +154,7 @@ def col_rename(dataframe):
 def make_cat(dataframe, percent=5, exclude=[], only=[]):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -168,7 +177,7 @@ def make_cat(dataframe, percent=5, exclude=[], only=[]):
                     
                     if feature in only:
                         try:
-                            n_df[feature].fillna("UNKNOWN", inplace=True)
+                            n_df[feature].fillna("UNKNOWN", i__nplace=True)
                             n_df[feature] = n_df[feature].astype('category')
                             cols.append(feature)
                         
@@ -181,7 +190,7 @@ def make_cat(dataframe, percent=5, exclude=[], only=[]):
                 else:   
                     
                     try:
-                        n_df[feature].fillna("UNKNOWN", inplace=True)
+                        n_df[feature].fillna("UNKNOWN", i__nplace=True)
                         n_df[feature] = n_df[feature].astype('category')
                         cols.append(feature)
                         
@@ -208,7 +217,7 @@ def make_cat(dataframe, percent=5, exclude=[], only=[]):
 def check_cat(dataframe, percent=5):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -257,7 +266,7 @@ def clean_nan(dataframe, percent=0.9):
             n_perc = c_null / c_len
             
             if n_perc >= 0.9:
-                n_df.drop(feature, axis='columns', inplace=True)
+                n_df.drop(feature, axis='columns', i__nplace=True)
                 cols.append(feature)
     
     
@@ -287,29 +296,29 @@ def split_values(dataframe):
     data_num, data_cat = split_values(df)
     """
               
-    data_num = dataframe.select_dtypes(include=[np.number])
-    data_cat = dataframe.select_dtypes(include=[np.object, "category"])
+    data_num = dataframe.select_dtypes(include=[__np.number])
+    data_cat = dataframe.select_dtypes(include=[__np.object, "category"])
       
     return data_num, data_cat
 
 
 def box_plot_all(dataframe):
     
-    data_num = dataframe.select_dtypes(include=[np.number])
+    data_num = dataframe.select_dtypes(include=[__np.number])
     for elem in data_num:
-        sns.boxplot(data=dataframe, x=elem);
+        __sns.boxplot(data=dataframe, x=elem);
     
-    return plt.show()
+    return __plt.show()
 
 
 def grid_plot(datafrmae, hue=None, save=None):
     
     print("Aguarde un momento...", end="")
-    sys.stdout.flush()
-    sns.set_style("darkgrid")
-    g = sns.PairGrid(datafrmae, hue=hue, height=4)
-    g.map_diag(sns.histplot, multiple="stack", element="step")
-    g.map_offdiag(sns.scatterplot)
+    __sys.stdout.flush()
+    __sns.set_style("darkgrid")
+    g = __sns.PairGrid(datafrmae, hue=hue, height=4)
+    g.map_diag(__sns.histplot, multiple="stack", element="step")
+    g.map_offdiag(__sns.scatterplot)
     g.add_legend()
     
     if save:
@@ -317,4 +326,4 @@ def grid_plot(datafrmae, hue=None, save=None):
     
     print('\r ')
     
-    return plt.show()
+    return __plt.show()
