@@ -97,16 +97,16 @@ def check_df(dataframe):
     
     data = {"N.": ran_col,
         "col. name": col_names,
-        "var_type": v_type,
-        "val_uniqe": count_uniq,
-        "val_NAN(%)": v_null,
-        "val_mean": val_mean,
-        "val_min": val_min,
-        "val_max": val_max,
-        "std": val_std,
+        "type": v_type,
+        "unique": count_uniq,
+        "NAN(%)": v_null,
+        "min": val_min,
         "25%": val_25,
         "50%": val_50,
         "75%": val_75,
+        "max": val_max,
+        "mean": val_mean,
+        "std": val_std,
         "binary_values": binary_val
     }
 
