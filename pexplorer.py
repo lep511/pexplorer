@@ -151,7 +151,7 @@ def col_rename(dataframe):
     return n_df
 
 
-def make_cat(dataframe, percent=5, exclude=[], only=[]):
+def make_cat(dataframe, percent=5, exclude=[]):
     
     n_df = dataframe.copy()
     is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
@@ -173,32 +173,15 @@ def make_cat(dataframe, percent=5, exclude=[], only=[]):
             
             if data_porc < percent and feature not in exclude:
                 
-                if only != []:
-                    
-                    if feature in only:
-                        try:
-                            n_df[feature].fillna("UNKNOWN", i__nplace=True)
-                            n_df[feature] = n_df[feature].astype('category')
-                            cols.append(feature)
+                try:
+                    n_df[feature].fillna("UNKNOWN", inplace=True)
+                    n_df[feature] = n_df[feature].astype('category')
+                    cols.append(feature)
                         
-                        except:
+                except:                
+                    print("{} no se pudo convertir.").format(feature)
+                    pass
                             
-                            print("Una columna ya es CATEGORICAL")
-                            return dataframe
-                            
-                
-                else:   
-                    
-                    try:
-                        n_df[feature].fillna("UNKNOWN", i__nplace=True)
-                        n_df[feature] = n_df[feature].astype('category')
-                        cols.append(feature)
-                        
-                    except:
-                        
-                        print("Una columna ya es CATEGORICAL")
-                        return dataframe
-     
     n_str = "\n"            
     for d in cols:
         val_uniq = len(n_df[d].unique())
@@ -266,7 +249,7 @@ def clean_nan(dataframe, percent=0.9):
             n_perc = c_null / c_len
             
             if n_perc >= 0.9:
-                n_df.drop(feature, axis='columns', i__nplace=True)
+                n_df.drop(feature, axis='columns', inplace=True)
                 cols.append(feature)
     
     
@@ -302,13 +285,12 @@ def split_values(dataframe):
     return data_num, data_cat
 
 
-def box_plot_all(dataframe):
+def correlation(dataframe):
     
-    data_num = dataframe.select_dtypes(include=[__np.number])
-    for elem in data_num:
-        __sns.boxplot(data=dataframe, x=elem);
-    
-    return __plt.show()
+    corr = dataframe.corr()
+    corr.style.background_gradient(cmap='coolwarm')
+        
+    return corr.style.background_gradient()
 
 
 def grid_plot(datafrmae, hue=None, save=None):
