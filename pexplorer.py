@@ -248,7 +248,7 @@ def clean_nan(dataframe, percent=0.9):
             
             n_perc = c_null / c_len
             
-            if n_perc >= 0.9:
+            if n_perc >= percent:
                 n_df.drop(feature, axis='columns', inplace=True)
                 cols.append(feature)
     
@@ -293,12 +293,29 @@ def correlation(dataframe):
     return corr.style.background_gradient()
 
 
-def grid_plot(datafrmae, hue=None, save=None):
+def grid_plot(dataframe, hue=None, save=None):
+    """Trazado de cuadrículas estructuradas de varios gráficos
+    
+    Parámetros
+    ----------
+    
+    `dataframe:` (Pandas dataframe)
+    `hue:` (row name) ‎para graficar diferentes niveles con diferentes colores‎
+    `save:` (nombre del archivo) si no se especifica no se guarda en el disco
+    """
+    n_df = dataframe.copy()
+    col_names = n_df.columns.tolist()
+    
+    for elem in col_names:
+        
+        # Check if column is bool and change to numpy.uint8
+        if n_df[elem].dtype == __np.bool:
+            n_df[elem] = n_df[elem].astype(__np.uint8)
     
     print("Aguarde un momento...", end="")
     __sys.stdout.flush()
     __sns.set_style("darkgrid")
-    g = __sns.PairGrid(datafrmae, hue=hue, height=4)
+    g = __sns.PairGrid(n_df, hue=hue, height=4)
     g.map_diag(__sns.histplot, multiple="stack", element="step")
     g.map_offdiag(__sns.scatterplot)
     g.add_legend()
