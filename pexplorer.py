@@ -287,10 +287,23 @@ def split_values(dataframe):
 
 def correlation(dataframe):
     
+    # Compute the correlation matrix
     corr = dataframe.corr()
-    corr.style.background_gradient(cmap='coolwarm')
-        
-    return corr.style.background_gradient()
+    
+    # Generate a mask for the upper triangle
+    mask = __np.triu(__np.ones_like(corr, dtype=bool))
+    
+    # Set up the matplotlib figure
+    f, ax = __plt.subplots(figsize=(11, 9))
+    
+    # Generate a custom diverging colormap
+    cmap = __sns.diverging_palette(230, 20, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    __sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, 
+                    square=True, linewidths=.5, cbar_kws={"shrink": .5})
+
+    return __plt.show()
 
 
 def grid_plot(dataframe, hue=None, save=None):
