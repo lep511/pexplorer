@@ -1,15 +1,17 @@
-import pandas as __pd
-import numpy as __np
-import matplotlib.pyplot as __plt
-import seaborn as __sns
-import sys as __sys
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sys
+import math
+
 
 def check_df(dataframe):
     
     df = dataframe.copy()
     
     df_drop = df.dropna()
-    is_num = df_drop.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = df_drop.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
     
     col_names, v_type, count_uniq, v_null = [], [], [], []
     val_max, val_min, val_mean, val_std  = [], [], [], []
@@ -24,7 +26,7 @@ def check_df(dataframe):
         count_uniq.append(len(df[feature].unique()))
         val_n = df[feature].isnull().sum() / len_df
         v_null.append(val_n)
-        is_bool = __pd.api.types.is_bool_dtype(df[feature])
+        is_bool = pd.api.types.is_bool_dtype(df[feature])
         is_null = len(df[feature].dropna())
     
         if is_num[feature] and not is_bool and is_null > 0:
@@ -34,9 +36,9 @@ def check_df(dataframe):
                 min_v = df[feature].min()
                 mea_v = df[feature].mean()
                 std_v = df[feature].std()
-                p25_v = __np.nanpercentile(df[feature], 25)
-                p50_v = __np.nanpercentile(df[feature], 50)
-                p75_v = __np.nanpercentile(df[feature], 75)
+                p25_v = np.nanpercentile(df[feature], 25)
+                p50_v = np.nanpercentile(df[feature], 50)
+                p75_v = np.nanpercentile(df[feature], 75)
                       
             except:
                 max_v, min_v, mea_v, std_v = "-", "-", "-", "-"
@@ -118,17 +120,21 @@ def check_df(dataframe):
         "binary values": binary_val
     }
 
-    df_new = __pd.DataFrame(data=data)
+    df_new = pd.DataFrame(data=data)
     df_new = df_new.set_index('Num.')
     
-    cm = __sns.light_palette("green", as_cmap=True)
-    text_indx = str(__pd.RangeIndex(df.index))
+    cm = sns.light_palette("green", as_cmap=True)
+    text_indx = str(pd.RangeIndex(df.index))
     
     return df_new.style.background_gradient(cmap=cm).set_caption(text_indx)
 
 
 def col_rename(dataframe):
-    
+    """
+    Cambia todos los nombres de las columnas
+    a minúsculas, elimina espacios en blancos
+    por _, lo mismo hace con . , :
+    """
     n_df = dataframe.copy()
     col_names = n_df.columns.tolist()
     col_newnam = []
@@ -143,6 +149,8 @@ def col_rename(dataframe):
         col_n = col_n.replace(":", "_")
         col_n = col_n.replace("-", "_")
         col_n = col_n.replace(" ", "_")
+        col_n = col_n.replace("(", "")
+        col_n = col_n.replace(")", "")
                 
         col_newnam.append(col_n)
     
@@ -154,7 +162,7 @@ def col_rename(dataframe):
 def make_cat(dataframe, percent=5, exclude=[]):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -200,7 +208,7 @@ def make_cat(dataframe, percent=5, exclude=[]):
 def check_cat(dataframe, percent=5):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -269,6 +277,62 @@ def clean_nan(dataframe, percent=0.9):
     return n_df
 
 
+def any_value(df, search):
+    """
+    Realiza una búsqueda de un valor en todo el dataframe
+
+    Args:
+        df (datafrane): dataframe donde buscar
+        search: elemento a buscar
+
+    Returns:
+        dataframe: dataframe con la busqueda
+    """
+    return df[df.eq(search).any(1)]
+
+
+def missing_values(df):
+    """
+    Chquea todas las columnas y devuelve el número de valores nulos.
+
+    Args:
+        df (dataframe): dataframe a analizar
+
+    Returns:
+        dataframe: tabla con la cantidad de valores nulos.
+    
+    credit: https://www.kaggle.com/willkoehrsen/start-here-a-gentle-introduction
+    """
+    # Total missing values
+    mis_val = df.isnull().sum()
+    
+    # Percentage of missing values
+    mis_val_percent = 100 * df.isnull().sum() / len(df), 2
+    
+    # Make a table with the results
+    mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
+    
+    # Rename the columns
+    mis_val_table_ren_columns = mis_val_table.rename(
+    columns = {0 : 'Missing Values', 1 : '% of Total Values'})
+    
+    # Sort the table by percentage of missing descending
+    mis_val_table_ren_columns = mis_val_table_ren_columns[
+        mis_val_table_ren_columns.iloc[:,1] != 0].sort_values(
+    '% of Total Values', ascending=False).round(1)
+    
+    # Print some summary information
+    print ("Your selected dataframe has " + str(df.shape[1]) + " columns.\n"      
+        "There are " + str(mis_val_table_ren_columns.shape[0]) +
+            " columns that have missing values.")
+    
+    # Return the dataframe with missing information
+    if mis_val_table_ren_columns.shape[0] != 0:
+        return mis_val_table_ren_columns.style.background_gradient(cmap="YlOrBr", subset=["Missing Values"])
+    
+    return
+
+
 def split_values(dataframe):
     """
     Devuelve dos dataframes, uno solo con valores númericos y el otro solo
@@ -279,10 +343,24 @@ def split_values(dataframe):
     data_num, data_cat = split_values(df)
     """
               
-    data_num = dataframe.select_dtypes(include=[__np.number])
-    data_cat = dataframe.select_dtypes(include=[__np.object, "category"])
+    data_num = dataframe.select_dtypes(include=[np.number])
+    data_cat = dataframe.select_dtypes(include=[np.object, "category"])
       
     return data_num, data_cat
+
+
+def memory_size(dataframe):
+    """
+    Devuelve el tamaño que ocupa en memoria el dataframe.
+    """
+    size_bytes = dataframe.memory_usage().sum()
+    if size_bytes == 0:
+        return "0B"
+    size_name = ("Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return "{} {}".format(s, size_name[i])
 
 
 def correlation(dataframe):
@@ -291,19 +369,19 @@ def correlation(dataframe):
     corr = dataframe.corr()
     
     # Generate a mask for the upper triangle
-    mask = __np.triu(__np.ones_like(corr, dtype=bool))
+    mask = np.triu(np.ones_like(corr, dtype=bool))
     
     # Set up the matplotlib figure
-    f, ax = __plt.subplots(figsize=(11, 9))
+    f, ax = plt.subplots(figsize=(11, 9))
     
     # Generate a custom diverging colormap
-    cmap = __sns.diverging_palette(230, 20, as_cmap=True)
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    __sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, 
+    sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, 
                     square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
-    return __plt.show()
+    return plt.show()
 
 
 def grid_plot(dataframe, hue=None, save=None):
@@ -322,15 +400,15 @@ def grid_plot(dataframe, hue=None, save=None):
     for elem in col_names:
         
         # Check if column is bool and change to numpy.uint8
-        if n_df[elem].dtype == __np.bool:
-            n_df[elem] = n_df[elem].astype(__np.uint8)
+        if n_df[elem].dtype == np.bool:
+            n_df[elem] = n_df[elem].astype(np.uint8)
     
     print("Aguarde un momento...", end="")
-    __sys.stdout.flush()
-    __sns.set_style("darkgrid")
-    g = __sns.PairGrid(n_df, hue=hue, height=4)
-    g.map_diag(__sns.histplot, multiple="stack", element="step")
-    g.map_offdiag(__sns.scatterplot)
+    sys.stdout.flush()
+    sns.set_style("darkgrid")
+    g = sns.PairGrid(n_df, hue=hue, height=4)
+    g.map_diag(sns.histplot, multiple="stack", element="step")
+    g.map_offdiag(sns.scatterplot)
     g.add_legend()
     
     if save:
@@ -338,4 +416,34 @@ def grid_plot(dataframe, hue=None, save=None):
     
     print('\r ')
     
-    return __plt.show()
+    return plt.show()
+
+
+def plot_numcat(dataframe, numeric_row, categoric_row):
+    """
+    Trazado de un gráfico para una variable numérica y otra categórica
+
+    Parámetros
+    ----------
+    
+    `dataframe` : (Pandas dataframe)
+    `numeric_row` : variable numérica del dataframe
+    `categoric_row` : variable categórica del dataframe
+    """
+    plt.style.use('seaborn-whitegrid')
+    fig = plt.figure(figsize=(15,4)) 
+    plt.subplot(1, 2, 1)
+    sns.countplot(y=categoric_row, data=dataframe);
+    plt.subplot(1, 2, 2)
+    sns.histplot(dataframe[numeric_row])
+    return plt.show()
+
+
+def help():
+    print("======= PandasExplorer 1.01 ========\n")
+    print("{:<20} {:<25} {:<20}".format('Función','Parámetros','Info'))
+    print("---------------------------------------------------------------------------------")
+    print("{:<20} {:<25} {:<20}".format('check_df','dataframe','Analiza un dataframe'))
+    print("{:<20} {:<25} {:<20}".format('col_rename','dataframe','Cambia el nombre de las columnas'))
+    print()
+    return
