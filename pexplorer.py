@@ -204,7 +204,17 @@ def make_cat(dataframe, percent=5, exclude=[]):
     
     return dataframe
 
-        
+
+def glimpse(dataframe):
+    """
+    Similar a la función glimpse de R. Muestra el nombre de cada
+    columna, con su dtype y los valores únicos.
+    """
+    print("Rows: {}".format(dataframe.shape[0]))
+    print("Columns: {}".format(dataframe.shape[1]))
+    return dataframe.apply(lambda x: [x.dtype, x.unique()]).T
+
+
 def check_cat(dataframe, percent=5):
     
     n_df = dataframe.copy()
