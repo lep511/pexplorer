@@ -329,7 +329,7 @@ def missing_values(df):
     # Sort the table by percentage of missing descending
     mis_val_table_ren_columns = mis_val_table_ren_columns[
         mis_val_table_ren_columns.iloc[:,1] != 0].sort_values(
-    '% of Total Values', ascending=False).round(1)
+    '% of Total Values', ascending=False).round(2)
     
     # Print some summary information
     print ("Your selected dataframe has " + str(df.shape[1]) + " columns.\n"      
