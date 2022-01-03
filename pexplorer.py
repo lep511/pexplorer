@@ -212,7 +212,9 @@ def glimpse(dataframe):
     """
     print("Rows: {}".format(dataframe.shape[0]))
     print("Columns: {}".format(dataframe.shape[1]))
-    return dataframe.apply(lambda x: [x.dtype, x.unique()]).T
+    glimpse_df = dataframe.apply(lambda x: [x.dtype, x.unique()]).T
+    glimpse_df.columns = ["dtype", "unique values"]
+    return glimpse_df
 
 
 def check_cat(dataframe, percent=5):
@@ -441,7 +443,7 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     `categoric_row` : variable categórica del dataframe
     """
     plt.style.use('seaborn-whitegrid')
-    fig = plt.figure(figsize=(15,4)) 
+    fig = plt.figure(figsize=(18,4)) 
     plt.subplot(1, 2, 1)
     sns.countplot(y=categoric_row, data=dataframe);
     plt.subplot(1, 2, 2)
