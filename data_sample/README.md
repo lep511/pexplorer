@@ -53,21 +53,3 @@ This dataset is republished as-is from the original BIG LIST on https://www.ther
 What ingredients or flavors are most commonly advertised on ramen package labels?
 How do ramen ratings compare against ratings for other food products (like, say, wine)?
 How is ramen manufacturing internationally distributed?
-
--------
-
-## **Wine Reviews (*winemag-data-130k-v2.csv*)**
-130k wine reviews with variety, location, winery, price, and description
-Last Updated: 4 years ago (Version 4)
-
-### About this Dataset
-After watching Somm (a documentary on master sommeliers) I wondered how I could create a predictive model to identify wines through blind tasting like a master sommelier would. The first step in this journey was gathering some data to train a model. I plan to use deep learning to predict the wine variety using words in the description/review. The model still won't be able to taste the wine, but theoretically it could identify the wine based on a description that a sommelier could give. If anyone has any ideas on how to accomplish this, please post them!
-
-### Content
-This dataset contains 10 columns and 130k rows of wine reviews.
-
-### Acknowledgements
-The data was scraped from WineEnthusiast during the week of June 15th, 2017. The code for the scraper can be found here if you have any more specific questions about data collection that I didn't address.
-
-### Inspiration
-I think that this dataset offers some great opportunities for sentiment analysis and other text related predictive models. My overall goal is to create a model that can identify the variety, winery, and location of a wine based on a description. If anyone has any ideas, breakthroughs, or other interesting insights/models please post them.
