@@ -210,7 +210,8 @@ def glimpse(dataframe):
     Similar a la función glimpse de R. Muestra el nombre de cada
     columna, con su dtype y los valores únicos.
     """
-    print("Rows: {}".format(dataframe.shape[0]))
+    rows_n = f"{dataframe.shape[0]:,}"
+    print("Rows: {}".format(rows_n))
     print("Columns: {}".format(dataframe.shape[1]))
     glimpse_df = dataframe.apply(lambda x: [x.dtype, x.unique()]).T
     glimpse_df.columns = ["dtype", "unique values"]
