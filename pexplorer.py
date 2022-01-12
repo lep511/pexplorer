@@ -449,6 +449,7 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     sns.countplot(y=categoric_row, data=dataframe);
     plt.subplot(1, 2, 2)
     sns.histplot(dataframe[numeric_row])
+    plt.xticks(rotation=90)
     return plt.show()
 
 
