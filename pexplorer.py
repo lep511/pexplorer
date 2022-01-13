@@ -111,12 +111,12 @@ def check_df(dataframe):
         "unique": count_uniq,
         "NAN(%)": v_null,
         "min": val_min,
-        "25%": val_25,
-        "50%": val_50,
-        "75%": val_75,
         "max": val_max,
         "mean": val_mean,
         "std": val_std,
+        "25%": val_25,
+        "50%": val_50,
+        "75%": val_75,
         "binary values": binary_val
     }
 
