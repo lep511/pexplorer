@@ -460,18 +460,30 @@ def normalize_row(dataframe):
     Algorithm based on:
     https://stackoverflow.com/questions/26537878/pandas-sum-across-columns-and-divide-each-cell-from-that-value
     """
-    return dataframe.div(dataframe.sum(axis=1), axis=0)
+    df_c = dataframe.copy()
+    df_n = df_c._get_numeric_data().div(df_c.sum(axis=1), axis=0)
+    for col in df_n.columns:
+      df_c[col] = df_n[col]
+    return df_c
+
 
 
 def normalize_column(dataframe, percent=False):
-    """
-    Normalizes the values of a given dataframe by 
-    the total sum of each column. If percent=True, 
-    multiplies the final value by 100.
+  """
+    Normalizes the values of a given dataframe by the total sum 
+    of each column. If percent=True (default), multiplies the final 
+    value by 100.
     Algorithm based on:
     https://stackoverflow.com/questions/26537878/pandas-sum-across-columns-and-divide-each-cell-from-that-value
     """
+    df_c = dataframe.copy()
+    df_n = df_c._get_numeric_data()
+    
     if percent:
-        return dataframe.div(dataframe.sum(axis=0), axis=1)*100
+        df_n = df_c._get_numeric_data().div(dataframe.sum(axis=0), axis=1)*100
     else:
-        return dataframe.div(dataframe.sum(axis=0), axis=1)
+        df_n = df_c._get_numeric_data().div(dataframe.sum(axis=0), axis=1)
+    
+    for col in df_n.columns:
+          df_c[col] = df_n[col]
+    return df_c
