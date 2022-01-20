@@ -453,11 +453,25 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     return plt.show()
 
 
-def help():
-    print("======= PandasExplorer 1.01 ========\n")
-    print("{:<20} {:<25} {:<20}".format('Función','Parámetros','Info'))
-    print("---------------------------------------------------------------------------------")
-    print("{:<20} {:<25} {:<20}".format('check_df','dataframe','Analiza un dataframe'))
-    print("{:<20} {:<25} {:<20}".format('col_rename','dataframe','Cambia el nombre de las columnas'))
-    print()
-    return
+def normalize_row(dataframe):
+    """
+    Normalizes the values of a given dataframe 
+    by the total sum of each line.
+    Algorithm based on:
+    https://stackoverflow.com/questions/26537878/pandas-sum-across-columns-and-divide-each-cell-from-that-value
+    """
+    return dataframe.div(dataframe.sum(axis=1), axis=0)
+
+
+def normalize_column(dataframe, percent=False):
+    """
+    Normalizes the values of a given dataframe by 
+    the total sum of each column. If percent=True, 
+    multiplies the final value by 100.
+    Algorithm based on:
+    https://stackoverflow.com/questions/26537878/pandas-sum-across-columns-and-divide-each-cell-from-that-value
+    """
+    if percent:
+        return dataframe.div(dataframe.sum(axis=0), axis=1)*100
+    else:
+        return dataframe.div(dataframe.sum(axis=0), axis=1)
