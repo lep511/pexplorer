@@ -469,7 +469,7 @@ def normalize_row(dataframe):
 
 
 def normalize_column(dataframe, percent=False):
-  """
+    """
     Normalizes the values of a given dataframe by the total sum 
     of each column. If percent=True (default), multiplies the final 
     value by 100.
