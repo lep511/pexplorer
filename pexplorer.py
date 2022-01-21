@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 import seaborn as sns
 import sys
 import math
@@ -467,7 +468,6 @@ def normalize_row(dataframe):
     return df_c
 
 
-
 def normalize_column(dataframe, percent=False):
     """
     Normalizes the values of a given dataframe by the total sum 
@@ -487,3 +487,56 @@ def normalize_column(dataframe, percent=False):
     for col in df_n.columns:
           df_c[col] = df_n[col]
     return df_c
+
+
+def outlier_grubbs_test(dataframe, alpha=0.05):
+    """
+    Grubbs' test, also called the ESD method (extreme studentized deviate), 
+    to determine if any of the columns contain outliers.
+
+    Args:
+        dataframe (Pandas.dataframe)
+        alpha (float, optional): Significance level. Defaults to 0.05.
+
+    Returns:
+        list: List of columns with outliers values
+    """
+    out_list = []
+    col_num = dataframe._get_numeric_data().columns.to_list()
+    
+    for c in col_num:
+        col = dataframe[c]
+        n = len(col)
+        mean_x = np.mean(col)
+        sd_x = np.std(col)
+        numerator = max(abs(col-mean_x))
+        g_calculated = numerator/sd_x
+        t_value = stats.t.ppf(1 - alpha / (2 * n), n - 2)
+        g_ca = (n - 1) * np.sqrt(np.square(t_value))
+        g_cb = np.sqrt(n) * np.sqrt(n - 2 + np.square(t_value))
+        g_critical = g_ca / g_cb
+        
+        if g_critical < g_calculated:
+            out_list.append(c)
+    return out_list
+
+
+def outlier_ZRscore(dataframe):
+    out = []
+    out_c = []
+    col_num = dataframe._get_numeric_data().columns.to_list()
+    print("OUTLIERS\n---------")
+    for c in col_num:
+        col = dataframe[c]
+        n = len(col.unique())
+        if n > 10:
+            med = np.median(col)
+            ma = stats.median_absolute_deviation(col)
+            for i in col:
+                z = (0.6745*(i-med)) / (np.median(ma))
+                if np.abs(z) > 3: 
+                    out.append(i)
+            if out != []:
+                print("{}: {}".format(c, out))
+                out_c.append(c)
+    return(out_c)
