@@ -585,14 +585,23 @@ def outliers(dataframe, silent=False):
             out_list.append(c)
     
     out_list = list(set(out_list))
-    
-    if not silent and out_list:
-        sns.set_style("whitegrid")
-        ax = sns.boxplot(data=dataframe[out_list], orient="h", palette="Set2")
-    
+       
     if out_list:
         return out_list
-    
     else:
         if not silent: print("Outliers not found in dataframe")
         return
+    
+    
+    def outliers_graph(dataframe):
+        cols = outliers(dataframe, silent=True)
+        if not cols:
+            print("Outliers not found in dataframe")
+            return
+        
+        plt.figure(figsize=(14, 7))
+        sns.set_style("whitegrid")
+        sns.boxplot(data=dataframe[cols], orient="h", palette="Set2")
+        return plt.show()
+        
+            
