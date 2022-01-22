@@ -502,9 +502,9 @@ def outliers(dataframe, silent=False):
         list: List of columns with outliers values
     """  
     out_list = []
+    title = 0
     col_num = dataframe._get_numeric_data().columns.to_list()
     
-    if not silent: print("=== Grubbs' test ===")
     for c in col_num:
         col = dataframe[c]
         n = len(col)
@@ -520,13 +520,17 @@ def outliers(dataframe, silent=False):
         if g_critical < g_calculated:
             out_list.append(c)
             if not silent:
+                if title == 0:
+                    print("=== Grubbs' test ===")
+                    title = 1
                 print(c)
     
-
-    if not silent: print("\n", "=== Tukey's method  ===")
+    
+    # Tukey's method
     """
     credits: https://gist.github.com/alice203
     """
+    title = 0
     outliers_prob = []
     outliers_poss = []
     
@@ -555,6 +559,9 @@ def outliers(dataframe, silent=False):
         
         if outliers_prob != []:
             if not silent:
+                if title == 0:
+                    print("\n", "=== Z-Score method  ===")
+                    title = 1
                 print(c)
                 print("  Probable outliers: ", list(set(outliers_prob)))
                 print("  Possible outliers: ", list(set(outliers_poss)))
@@ -562,15 +569,20 @@ def outliers(dataframe, silent=False):
             outliers_prob = []
             outliers_poss = []
     
-
-    if not silent: print("\n", "=== Z-Score method  ===")
+    
+    # Z-Score method
+    title = 0
     for c in col_num:
         col = dataframe[c]
         z_score = stats.zscore(col, nan_policy="omit")
         z_filter = np.abs(z_score) > 3
         if np.sum(z_filter) != 0:
             if not silent:
+                if title == 0:
+                    print("\n", "=== Z-Score method  ===")
+                    title = 1
                 print(c, "\n", "  ", list(set(col[z_filter])))
             out_list.append(c)
-
-    return list(set(out_list))
+    
+    if out_list:
+        return list(set(out_list))
