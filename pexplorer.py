@@ -553,11 +553,11 @@ def outliers(dataframe, silent=False):
         
         for index, x in enumerate(dataframe[c]):
             if x <= outer_fence_le or x >= outer_fence_ue:
-                outliers_prob.append(np.round(x,2))
+                outliers_prob.append(x)
         
         for index, x in enumerate(dataframe[c]):
             if x <= inner_fence_le or x >= inner_fence_ue:
-                outliers_poss.append(np.round(x,2))
+                outliers_poss.append(x)
         
         if outliers_prob != []:
             if not silent:
