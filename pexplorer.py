@@ -5,6 +5,8 @@ import scipy.stats as stats
 import seaborn as sns
 import sys
 import math
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def check_df(dataframe):
