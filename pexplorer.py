@@ -586,7 +586,7 @@ def outliers(dataframe, silent=False):
     
     out_list = list(set(out_list))
     
-    if not silent:
+    if not silent and out_list:
         sns.set_style("whitegrid")
         ax = sns.boxplot(data=dataframe[out_list], orient="h", palette="Set2")
     
