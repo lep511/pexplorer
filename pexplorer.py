@@ -599,7 +599,7 @@ def outliers_graph(dataframe):
         print("Outliers not found in dataframe")
         return
     
-    plt.figure(figsize=(14, 7))
+    plt.figure(figsize=(14, len(cols) / 1.7))
     sns.set_style("whitegrid")
     sns.boxplot(data=dataframe[cols], orient="h", palette="Set2")
     return plt.show()
