@@ -491,7 +491,7 @@ def normalize_column(dataframe, percent=False):
     return df_c
 
 
-def outliers(dataframe, silent=False):
+def outliers(dataframe, silent=False, n_round=2):
     """
     Grubbs' test, also called the ESD method (extreme studentized deviate), 
     to determine if any of the columns contain outliers.
@@ -506,6 +506,10 @@ def outliers(dataframe, silent=False):
     out_list = []
     title = 0
     col_num = dataframe._get_numeric_data().columns.to_list()
+    
+    for c in col_num:
+        if dataframe[c].dtype == "bool":
+            col_num.remove(c)
     
     for c in col_num:
         col = dataframe[c]
@@ -526,7 +530,6 @@ def outliers(dataframe, silent=False):
                     print("=== Grubbs' test ===")
                     title = 1
                 print(c)
-    
     
     # Tukey's method
     """
@@ -553,11 +556,11 @@ def outliers(dataframe, silent=False):
         
         for index, x in enumerate(dataframe[c]):
             if x <= outer_fence_le or x >= outer_fence_ue:
-                outliers_prob.append(x)
+                outliers_prob.append(np.round(x, n_round))
         
         for index, x in enumerate(dataframe[c]):
             if x <= inner_fence_le or x >= inner_fence_ue:
-                outliers_poss.append(x)
+                outliers_poss.append(np.round(x, n_round))
         
         if outliers_prob != []:
             if not silent:
@@ -571,7 +574,6 @@ def outliers(dataframe, silent=False):
             outliers_prob = []
             outliers_poss = []
     
-    
     # Z-Score method
     title = 0
     for c in col_num:
@@ -583,7 +585,8 @@ def outliers(dataframe, silent=False):
                 if title == 0:
                     print("\n", "=== Z-Score method  ===")
                     title = 1
-                print(c, "\n", "  ", list(set(col[z_filter])))
+                col_round = np.round(col[z_filter], n_round)
+                print(c, "\n", "  ", list(set(col_round)))
             out_list.append(c)
     
     out_list = list(set(out_list))
@@ -596,12 +599,23 @@ def outliers(dataframe, silent=False):
     
     
 def outliers_graph(dataframe):
+    """
+    Plots the outliers found in the data frame.
+
+    Args:
+        dataframe: Pandas.dataframe
+
+    Returns:
+        [type]: [description]
+    """
     cols = outliers(dataframe, silent=True)
     if not cols:
         print("Outliers not found in dataframe")
         return
     
-    plt.figure(figsize=(14, len(cols) / 1.7))
+    plt.figure(figsize=(14, len(cols) / 1.5))
     sns.set_style("whitegrid")
+    sns.set(font_scale = 1.15)
     sns.boxplot(data=dataframe[cols], orient="h", palette="Set2")
+    plt.title("Outliers Found")
     return plt.show()
