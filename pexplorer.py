@@ -489,7 +489,7 @@ def normalize_column(dataframe, percent=False):
     return df_c
 
 
-def outlier_grubbs_test(dataframe, alpha=0.05):
+def outliers(dataframe, silent=False):
     """
     Grubbs' test, also called the ESD method (extreme studentized deviate), 
     to determine if any of the columns contain outliers.
@@ -500,10 +500,11 @@ def outlier_grubbs_test(dataframe, alpha=0.05):
 
     Returns:
         list: List of columns with outliers values
-    """
+    """  
     out_list = []
     col_num = dataframe._get_numeric_data().columns.to_list()
     
+    if not silent: print("=== Grubbs' test ===")
     for c in col_num:
         col = dataframe[c]
         n = len(col)
@@ -511,32 +512,65 @@ def outlier_grubbs_test(dataframe, alpha=0.05):
         sd_x = np.std(col)
         numerator = max(abs(col-mean_x))
         g_calculated = numerator/sd_x
-        t_value = stats.t.ppf(1 - alpha / (2 * n), n - 2)
+        t_value = stats.t.ppf(1 - 0.05 / (2 * n), n - 2)
         g_ca = (n - 1) * np.sqrt(np.square(t_value))
         g_cb = np.sqrt(n) * np.sqrt(n - 2 + np.square(t_value))
         g_critical = g_ca / g_cb
         
         if g_critical < g_calculated:
             out_list.append(c)
-    return out_list
+            if not silent:
+                print(c)
+    
 
+    if not silent: print("\n", "=== Tukey's method  ===")
+    """
+    credits: https://gist.github.com/alice203
+    """
+    outliers_prob = []
+    outliers_poss = []
+    
+    for c in col_num:
+        q1 = dataframe[c].quantile(0.25)
+        q3 = dataframe[c].quantile(0.75)
+        iqr = q3-q1
+        inner_fence = 1.5*iqr
+        outer_fence = 3*iqr
 
-def outlier_ZRscore(dataframe):
-    out = []
-    out_c = []
-    col_num = dataframe._get_numeric_data().columns.to_list()
-    print("OUTLIERS\n---------")
+        #inner fence lower and upper end
+        inner_fence_le = q1-inner_fence
+        inner_fence_ue = q3+inner_fence
+
+        #outer fence lower and upper end
+        outer_fence_le = q1-outer_fence
+        outer_fence_ue = q3+outer_fence
+        
+        for index, x in enumerate(dataframe[c]):
+            if x <= outer_fence_le or x >= outer_fence_ue:
+                outliers_prob.append(np.round(x,2))
+        
+        for index, x in enumerate(dataframe[c]):
+            if x <= inner_fence_le or x >= inner_fence_ue:
+                outliers_poss.append(np.round(x,2))
+        
+        if outliers_prob != []:
+            if not silent:
+                print(c)
+                print("  Probable outliers: ", list(set(outliers_prob)))
+                print("  Possible outliers: ", list(set(outliers_poss)))
+            out_list.append(c)
+            outliers_prob = []
+            outliers_poss = []
+    
+
+    if not silent: print("\n", "=== Z-Score method  ===")
     for c in col_num:
         col = dataframe[c]
-        n = len(col.unique())
-        if n > 10:
-            med = np.median(col)
-            ma = stats.median_absolute_deviation(col)
-            for i in col:
-                z = (0.6745*(i-med)) / (np.median(ma))
-                if np.abs(z) > 3: 
-                    out.append(i)
-            if out != []:
-                print("{}: {}".format(c, out))
-                out_c.append(c)
-    return(out_c)
+        z_score = stats.zscore(col, nan_policy="omit")
+        z_filter = np.abs(z_score) > 3
+        if np.sum(z_filter) != 0:
+            if not silent:
+                print(c, "\n", "  ", list(set(col[z_filter])))
+            out_list.append(c)
+
+    return list(set(out_list))
