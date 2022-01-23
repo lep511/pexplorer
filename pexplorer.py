@@ -470,7 +470,7 @@ def normalize_row(dataframe):
     return df_c
 
 
-def normalize_column(dataframe, percent=False):
+def normalize_column(dataframe, percent=True):
     """
     Normalizes the values of a given dataframe by the total sum 
     of each column. If percent=True (default), multiplies the final 
@@ -537,42 +537,43 @@ def outliers(dataframe, silent=False, n_round=2):
     """
     title = 0
     outliers_prob = []
-    outliers_poss = []
     
     for c in col_num:
         q1 = dataframe[c].quantile(0.25)
         q3 = dataframe[c].quantile(0.75)
+        q1_l = np.quantile(dataframe[c], 0.25)
+        q3_l = np.quantile(dataframe[c], 0.75)
+        log_vals = np.log(np.abs(dataframe[c]) + 1)
+
         iqr = q3-q1
-        inner_fence = 1.5*iqr
-        outer_fence = 3*iqr
-
-        #inner fence lower and upper end
-        inner_fence_le = q1-inner_fence
-        inner_fence_ue = q3+inner_fence
-
+        outer_fence = 3 * iqr
+        
+        iqr_l = q3_l - q1_l
+        outer_fence_l = 3 * iqr_l
+        
         #outer fence lower and upper end
-        outer_fence_le = q1-outer_fence
-        outer_fence_ue = q3+outer_fence
+        outer_fence_le = q1 - outer_fence
+        outer_fence_ue = q3 + outer_fence
+        
+        outer_fence_le_l = q1_l - outer_fence_l
+        outer_fence_ue_l = q3_l + outer_fence
         
         for index, x in enumerate(dataframe[c]):
             if x <= outer_fence_le or x >= outer_fence_ue:
                 outliers_prob.append(np.round(x, n_round))
         
-        for index, x in enumerate(dataframe[c]):
-            if x <= inner_fence_le or x >= inner_fence_ue:
-                outliers_poss.append(np.round(x, n_round))
+        filter_l = np.where((log_vals <= outer_fence_le_l) | (log_vals >= outer_fence_ue_l), True, False)
         
         if outliers_prob != []:
             if not silent:
                 if title == 0:
-                    print("\n", "=== Z-Score method  ===")
+                    print("\n", "=== Tukey's method  ===")
                     title = 1
                 print(c)
-                print("  Probable outliers: ", list(set(outliers_prob)))
-                print("  Possible outliers: ", list(set(outliers_poss)))
+                print("   ", list(set(outliers_prob)))
+                print("   ", list(set(dataframe[c][filter_l])))
             out_list.append(c)
             outliers_prob = []
-            outliers_poss = []
     
     # Z-Score method
     title = 0
@@ -613,9 +614,11 @@ def outliers_graph(dataframe):
         print("Outliers not found in dataframe")
         return
     
-    plt.figure(figsize=(14, len(cols) / 1.5))
+    vals_norm = normalize_column(dataframe[cols])
+    plt.figure(figsize=(14, len(cols) / 1.8))
     sns.set_style("whitegrid")
-    sns.set(font_scale = 1.15)
-    sns.boxplot(data=dataframe[cols], orient="h", palette="Set2")
+    sns.set(font_scale = 1.1)
+    ax = sns.boxplot(data=vals_norm, orient="h", palette="Set2")
+    ax.set(xlabel='normalized values')
     plt.title("Outliers Found")
     return plt.show()
