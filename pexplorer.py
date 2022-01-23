@@ -505,12 +505,13 @@ def outliers(dataframe, silent=False, n_round=2):
     """  
     out_list = []
     title = 0
-    col_num = dataframe._get_numeric_data().columns.to_list()
+    col_dat = dataframe._get_numeric_data().columns.to_list()
+    col_num = []
     
-    for c in col_num:
-        if dataframe[c].dtype == "bool":
-            col_num.remove(c)
-    
+    for c in col_dat:
+        if len(dataframe[c].dropna().unique()) > 2:
+            col_num.append(c)
+                
     for c in col_num:
         col = dataframe[c]
         n = len(col)
@@ -559,6 +560,7 @@ def outliers(dataframe, silent=False, n_round=2):
         outer_fence_ue_l = q3_l + outer_fence_l
         
         for index, x in enumerate(dataframe[c]):
+            
             if x <= outer_fence_le or x >= outer_fence_ue:
                 outliers_prob.append(np.round(x, n_round))
         
@@ -570,13 +572,19 @@ def outliers(dataframe, silent=False, n_round=2):
         log_result = dataframe[c][filter_l].round(n_round)
         
         if outliers_prob != []:
+            
             if not silent:
+                
                 if title == 0:
                     print("\n", "=== Tukey's method  ===")
                     title = 1
-                print(c)
-                print("   ", list(set(outliers_prob)))
-                print("   ", list(set(log_result)))
+               
+                print(c, list(set(outliers_prob)))
+               
+                if len(log_result) != 0:
+                    print(c, "(log)", list(set(log_result)))
+                print(" ")
+            
             out_list.append(c)
             outliers_prob = []
     
@@ -592,7 +600,8 @@ def outliers(dataframe, silent=False, n_round=2):
                     print("\n", "=== Z-Score method  ===")
                     title = 1
                 col_round = np.round(col[z_filter], n_round)
-                print(c, "\n", "  ", list(set(col_round)))
+                print(c, list(set(col_round)))
+                print(" ")
             out_list.append(c)
     
     out_list = list(set(out_list))
