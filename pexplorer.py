@@ -541,10 +541,10 @@ def outliers(dataframe, silent=False, n_round=2):
     for c in col_num:
         q1 = dataframe[c].quantile(0.25)
         q3 = dataframe[c].quantile(0.75)
-        q1_l = np.quantile(dataframe[c], 0.25)
-        q3_l = np.quantile(dataframe[c], 0.75)
         log_vals = np.log(np.abs(dataframe[c]) + 1)
-
+        q1_l = np.quantile(log_vals, 0.25)
+        q3_l = np.quantile(log_vals, 0.75)
+        
         iqr = q3-q1
         outer_fence = 3 * iqr
         
@@ -556,13 +556,18 @@ def outliers(dataframe, silent=False, n_round=2):
         outer_fence_ue = q3 + outer_fence
         
         outer_fence_le_l = q1_l - outer_fence_l
-        outer_fence_ue_l = q3_l + outer_fence
+        outer_fence_ue_l = q3_l + outer_fence_l
         
         for index, x in enumerate(dataframe[c]):
             if x <= outer_fence_le or x >= outer_fence_ue:
                 outliers_prob.append(np.round(x, n_round))
         
-        filter_l = np.where((log_vals <= outer_fence_le_l) | (log_vals >= outer_fence_ue_l), True, False)
+        filter_l = np.where((log_vals <= outer_fence_le_l) 
+                            | (log_vals >= outer_fence_ue_l), 
+                            True, 
+                            False
+        )
+        log_result = dataframe[c][filter_l].round(n_round)
         
         if outliers_prob != []:
             if not silent:
@@ -571,7 +576,7 @@ def outliers(dataframe, silent=False, n_round=2):
                     title = 1
                 print(c)
                 print("   ", list(set(outliers_prob)))
-                print("   ", list(set(dataframe[c][filter_l])))
+                print("   ", list(set(log_result)))
             out_list.append(c)
             outliers_prob = []
     
