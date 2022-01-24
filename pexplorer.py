@@ -619,9 +619,6 @@ def outliers_graph(dataframe):
 
     Args:
         dataframe: Pandas.dataframe
-
-    Returns:
-        [type]: [description]
     """
     cols = outliers(dataframe, silent=True)
     if not cols:
