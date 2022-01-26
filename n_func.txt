@@ -1,0 +1,8 @@
+df_train['SalePrice_Log'] = np.log(df_train['SalePrice'])
+
+sns.distplot(df_train['SalePrice_Log']);
+# skewness and kurtosis
+print("Skewness: %f" % df_train['SalePrice_Log'].skew())
+print("Kurtosis: %f" % df_train['SalePrice_Log'].kurt())
+# dropping old column
+df_train.drop('SalePrice', axis= 1, inplace=True)
