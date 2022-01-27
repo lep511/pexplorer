@@ -3,11 +3,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import seaborn as sns
+import _functools
 import sys
 import re
 import math
 import warnings
 warnings.filterwarnings("ignore")
+
+
+def factorial_n(num):
+    
+    def mult(x,y):
+        print("x=",x," y=",y)
+        return x*y
+    
+    fact = _functools.reduce(mult, range(1, num + 1))
+    print ('Factorial of {}: {}'.format(num, fact))
 
 
 def check_df(dataframe):
