@@ -454,7 +454,7 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     return plt.show()
 
 
-def plot_distribution(dataframe, numeric_row):
+def plot_distribution(dataframe, numeric_row, rnd=3, hue=None):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -464,23 +464,37 @@ def plot_distribution(dataframe, numeric_row):
     `dataframe` : (Pandas dataframe)
     `numeric_row` : variable numérica del dataframe
     """
-    val_log = np.log(dataframe[numeric_row])
-    std_n = dataframe[numeric_row].std()
-    var_n = dataframe[numeric_row].var()
-    skew = dataframe[numeric_row].skew()
-    kurto = dataframe[numeric_row].kurt()
+    std_n = np.round(dataframe[numeric_row].std(), rnd)
+    var_n = np.round(dataframe[numeric_row].var(), rnd)
+    skew = np.round(dataframe[numeric_row].skew(), rnd)
+    kurto = np.round(dataframe[numeric_row].kurt(), rnd)
     
     print("Standard Deviation (dispersion): {}".format(std_n))
     print("Variance (spread out): {}".format(var_n))
     print("Skewness (distortion or asymmetry): {}".format(skew))
     print("Kurtosis (peakedness of a distribution): {}".format(kurto))
-    
+    print("")
+
     plt.style.use('seaborn-whitegrid')
-    fig = plt.figure(figsize=(18,4)) 
+    fig = plt.figure(figsize=(18,7)) 
     plt.subplot(1, 2, 1)
-    sns.histplot(dataframe[numeric_row]);
+    sns.histplot(data=dataframe, 
+                 x=numeric_row,
+                 palette="light:m_r",
+                 edgecolor=".3",
+                 linewidth=.5
+    );
     plt.subplot(1, 2, 2)
-    sns.histplot(val_log, color="salmon")
+    sns.histplot(data=dataframe, 
+                  x=numeric_row,
+                  hue=hue,
+                  kde=True, 
+                  log_scale=True,
+                  palette="light:m_r",
+                  edgecolor=".3",
+                  linewidth=.5,
+                  multiple="stack"
+    )
     plt.xlabel(numeric_row + " (logarithm)")
     return plt.show()
 
