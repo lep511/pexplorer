@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 import seaborn as sns
 import sys
+import re
 import math
 import warnings
 warnings.filterwarnings("ignore")
@@ -138,13 +139,12 @@ def col_rename(dataframe):
     a minúsculas, elimina espacios en blancos
     por _, lo mismo hace con . , :
     """
-    n_df = dataframe.copy()
-    col_names = n_df.columns.tolist()
-    col_newnam = []
+    col_newname = []
     
-    for elem in col_names:
+    for elem in dataframe.columns:
         
         col_n = elem
+        col_n = '_'.join(re.findall('[A-Z][a-z]*', col_n))
         col_n = col_n.lower()
         col_n = col_n.strip()
         col_n = col_n.replace(",", "_")
@@ -153,13 +153,11 @@ def col_rename(dataframe):
         col_n = col_n.replace("-", "_")
         col_n = col_n.replace(" ", "_")
         col_n = col_n.replace("(", "")
-        col_n = col_n.replace(")", "")
-                
-        col_newnam.append(col_n)
-    
-    n_df.columns = col_newnam
-    
-    return n_df
+        col_n = col_n.replace(")", "")     
+        col_newname.append(col_n)
+     
+    return col_newname
+
 
 
 def make_cat(dataframe, percent=5, exclude=[]):
@@ -453,6 +451,37 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     plt.subplot(1, 2, 2)
     sns.histplot(dataframe[numeric_row])
     plt.xticks(rotation=90)
+    return plt.show()
+
+
+def plot_distribution(dataframe, numeric_row):
+    """
+    Trazado de un gráfico para una variable numérica y otra categórica
+
+    Parámetros
+    ----------
+    
+    `dataframe` : (Pandas dataframe)
+    `numeric_row` : variable numérica del dataframe
+    """
+    val_log = np.log(dataframe[numeric_row])
+    std_n = dataframe[numeric_row].std()
+    var_n = dataframe[numeric_row].var()
+    skew = dataframe[numeric_row].skew()
+    kurto = dataframe[numeric_row].kurt()
+    
+    print("Standard Deviation (dispersion): {}".format(std_n))
+    print("Variance (spread out): {}".format(var_n))
+    print("Skewness (distortion or asymmetry): {}".format(skew))
+    print("Kurtosis (peakedness of a distribution): {}".format(kurto))
+    
+    plt.style.use('seaborn-whitegrid')
+    fig = plt.figure(figsize=(18,4)) 
+    plt.subplot(1, 2, 1)
+    sns.histplot(dataframe[numeric_row]);
+    plt.subplot(1, 2, 2)
+    sns.histplot(val_log, color="salmon")
+    plt.xlabel(numeric_row + " (logarithm)")
     return plt.show()
 
 
