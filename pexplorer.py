@@ -474,18 +474,19 @@ def plot_distribution(dataframe, numeric_row, rnd=3, hue=None):
     print("Skewness (distortion or asymmetry): {}".format(skew))
     print("Kurtosis (peakedness of a distribution): {}".format(kurto))
     print("")
+    df_notnan = dataframe.dropna()
 
     _plt.style.use('seaborn-whitegrid')
     fig = _plt.figure(figsize=(18,7)) 
     _plt.subplot(1, 2, 1)
-    _sns.histplot(data=dataframe, 
+    _sns.histplot(data=df_notnan, 
                  x=numeric_row,
                  palette="light:m_r",
                  edgecolor=".3",
                  linewidth=.5
     );
     _plt.subplot(1, 2, 2)
-    _sns.histplot(data=dataframe, 
+    _sns.histplot(data=df_notnan, 
                   x=numeric_row,
                   hue=hue,
                   kde=True, 
