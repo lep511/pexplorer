@@ -214,7 +214,7 @@ def glimpse(dataframe):
     rows_n = f"{dataframe.shape[0]:,}"
     print("Rows: {}".format(rows_n))
     print("Columns: {}".format(dataframe.shape[1]))
-    glimpse_df = dataframe.apply(lambda x: [x.dtype, x.unique()[0:7]]).T
+    glimpse_df = dataframe.apply(lambda x: [x.dtype, x.unique()[0:12]]).T
     glimpse_df.columns = ["dtype", "sample values"]
     return glimpse_df
 
