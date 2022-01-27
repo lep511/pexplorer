@@ -1,13 +1,13 @@
-import pandas as _pd
-import numpy as _np
-import matplotlib.pyplot as _plt
-import scipy.stats as _stats
-import seaborn as _sns
-import sys as _sys
-import re as _re
-import math as _math
-import warnings as _warnings
-_warnings.filterwarnings("ignore")
+import pandas as __pd
+import numpy as __np
+import matplotlib.pyplot as __plt
+import scipy.stats as __stats
+import seaborn as __sns
+import sys as __sys
+import re as __re
+import math as __math
+import warnings as __warnings
+__warnings.filterwarnings("ignore")
 
 
 def check_df(dataframe):
@@ -15,7 +15,7 @@ def check_df(dataframe):
     df = dataframe.copy()
     
     df_drop = df.dropna()
-    is_num = df_drop.apply(lambda s: _pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = df_drop.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
     
     col_names, v_type, count_uniq, v_null = [], [], [], []
     val_max, val_min, val_mean, val_std  = [], [], [], []
@@ -30,7 +30,7 @@ def check_df(dataframe):
         count_uniq.append(len(df[feature].unique()))
         val_n = df[feature].isnull().sum() / len_df
         v_null.append(val_n)
-        is_bool = _pd.api.types.is_bool_dtype(df[feature])
+        is_bool = __pd.api.types.is_bool_dtype(df[feature])
         is_null = len(df[feature].dropna())
     
         if is_num[feature] and not is_bool and is_null > 0:
@@ -40,9 +40,9 @@ def check_df(dataframe):
                 min_v = df[feature].min()
                 mea_v = df[feature].mean()
                 std_v = df[feature].std()
-                p25_v = _np.nanpercentile(df[feature], 25)
-                p50_v = _np.nanpercentile(df[feature], 50)
-                p75_v = _np.nanpercentile(df[feature], 75)
+                p25_v = __np.nanpercentile(df[feature], 25)
+                p50_v = __np.nanpercentile(df[feature], 50)
+                p75_v = __np.nanpercentile(df[feature], 75)
                       
             except:
                 max_v, min_v, mea_v, std_v = "-", "-", "-", "-"
@@ -124,27 +124,27 @@ def check_df(dataframe):
         "binary values": binary_val
     }
 
-    df_new = _pd.DataFrame(data=data)
+    df_new = __pd.DataFrame(data=data)
     df_new = df_new.set_index('Num.')
     
-    cm = _sns.light_palette("green", as_cmap=True)
-    text_indx = str(_pd.RangeIndex(df.index))
+    cm = __sns.light_palette("green", as_cmap=True)
+    text_indx = str(__pd.RangeIndex(df.index))
     
     return df_new.style.background_gradient(cmap=cm).set_caption(text_indx)
 
 
-def col_rename(dataframe):
+def col_rename(dataframe, inplace=False):
     """
     Cambia todos los nombres de las columnas
     a minúsculas, elimina espacios en blancos
     por _, lo mismo hace con . , :
     """
-    col_newname = []
+    col_newname = dict()
     
     for elem in dataframe.columns:
         
         col_n = elem
-        col_n = '_'.join(_re.findall('[A-Z][a-z]*', col_n))
+        col_n = '_'.join(__re.findall('[A-Z][a-z]*', col_n))
         col_n = col_n.lower()
         col_n = col_n.strip()
         col_n = col_n.replace(",", "_")
@@ -154,16 +154,19 @@ def col_rename(dataframe):
         col_n = col_n.replace(" ", "_")
         col_n = col_n.replace("(", "")
         col_n = col_n.replace(")", "")     
-        col_newname.append(col_n)
-     
-    return col_newname
+        col_newname[elem] = col_n
+    
+    if inplace: 
+        return dataframe.rename(columns=col_newname, inplace=True)
+    else:
+        return col_newname
 
 
 
 def make_cat(dataframe, percent=5, exclude=[]):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: _pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -222,7 +225,7 @@ def glimpse(dataframe):
 def check_cat(dataframe, percent=5):
     
     n_df = dataframe.copy()
-    is_num = n_df.apply(lambda s: _pd.to_numeric(s, errors='coerce').notnull().all())
+    is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
     cols = []
     percent = percent / 100
     
@@ -324,7 +327,7 @@ def missing_values(df):
     mis_val_percent = mis_val / len(df)
     
     # Make a table with the results
-    mis_val_table = _pd.concat([mis_val, mis_val_percent], axis=1)
+    mis_val_table = __pd.concat([mis_val, mis_val_percent], axis=1)
     
     # Rename the columns
     mis_val_table_ren_columns = mis_val_table.rename(
@@ -357,8 +360,8 @@ def split_values(dataframe):
     data_num, data_cat = split_values(df)
     """
               
-    data_num = dataframe.select_dtypes(include=[_np.number])
-    data_cat = dataframe.select_dtypes(include=[_np.object, "category"])
+    data_num = dataframe.select_dtypes(include=[__np.number])
+    data_cat = dataframe.select_dtypes(include=[__np.object, "category"])
       
     return data_num, data_cat
 
@@ -371,8 +374,8 @@ def memory_size(dataframe):
     if size_bytes == 0:
         return "0B"
     size_name = ("Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(_math.floor(_math.log(size_bytes, 1024)))
-    p = _math.pow(1024, i)
+    i = int(__math.floor(__math.log(size_bytes, 1024)))
+    p = __math.pow(1024, i)
     s = round(size_bytes / p, 2)
     return "{} {}".format(s, size_name[i])
 
@@ -383,19 +386,19 @@ def correlation(dataframe):
     corr = dataframe.corr()
     
     # Generate a mask for the upper triangle
-    mask = _np.triu(_np.ones_like(corr, dtype=bool))
+    mask = __np.triu(__np.ones_like(corr, dtype=bool))
     
     # Set up the matplotlib figure
-    f, ax = _plt.subplots(figsize=(11, 9))
+    f, ax = __plt.subplots(figsize=(11, 9))
     
     # Generate a custom diverging colormap
-    cmap = _sns.diverging_palette(230, 20, as_cmap=True)
+    cmap = __sns.diverging_palette(230, 20, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    _sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, 
+    __sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, 
                     square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
-    return _plt.show()
+    return __plt.show()
 
 
 def grid_plot(dataframe, hue=None, save=None):
@@ -414,15 +417,15 @@ def grid_plot(dataframe, hue=None, save=None):
     for elem in col_names:
         
         # Check if column is bool and change to numpy.uint8
-        if n_df[elem].dtype == _np.bool:
-            n_df[elem] = n_df[elem].astype(_np.uint8)
+        if n_df[elem].dtype == __np.bool:
+            n_df[elem] = n_df[elem].astype(__np.uint8)
     
     print("Aguarde un momento...", end="")
-    _sys.stdout.flush()
-    _sns.set_style("darkgrid")
-    g = _sns.PairGrid(n_df, hue=hue, height=4)
-    g.map_diag(_sns.histplot, multiple="stack", element="step")
-    g.map_offdiag(_sns.scatterplot)
+    __sys.stdout.flush()
+    __sns.set_style("darkgrid")
+    g = __sns.PairGrid(n_df, hue=hue, height=4)
+    g.map_diag(__sns.histplot, multiple="stack", element="step")
+    g.map_offdiag(__sns.scatterplot)
     g.add_legend()
     
     if save:
@@ -430,10 +433,10 @@ def grid_plot(dataframe, hue=None, save=None):
     
     print('\r ')
     
-    return _plt.show()
+    return __plt.show()
 
 
-def plot_numcat(dataframe, numeric_row, categoric_row):
+def plot_numcat(dataframe, numeric_col, categoric_col):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -444,17 +447,17 @@ def plot_numcat(dataframe, numeric_row, categoric_row):
     `numeric_row` : variable numérica del dataframe
     `categoric_row` : variable categórica del dataframe
     """
-    _plt.style.use('seaborn-whitegrid')
-    fig = _plt.figure(figsize=(18,4)) 
-    _plt.subplot(1, 2, 1)
-    _sns.countplot(y=categoric_row, data=dataframe);
-    _plt.subplot(1, 2, 2)
-    _sns.histplot(dataframe[numeric_row])
-    _plt.xticks(rotation=90)
-    return _plt.show()
+    __plt.style.use('seaborn-whitegrid')
+    fig = __plt.figure(figsize=(18,4)) 
+    __plt.subplot(1, 2, 1)
+    __sns.countplot(y=categoric_col, data=dataframe);
+    __plt.subplot(1, 2, 2)
+    __sns.histplot(dataframe[numeric_col])
+    __plt.xticks(rotation=90)
+    return __plt.show()
 
 
-def plot_distribution(dataframe, numeric_row, rnd=3, hue=None):
+def plot_distribution(dataframe, numeric_col, rnd=3, hue=None):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -464,30 +467,22 @@ def plot_distribution(dataframe, numeric_row, rnd=3, hue=None):
     `dataframe` : (Pandas dataframe)
     `numeric_row` : variable numérica del dataframe
     """
-    std_n = _np.round(dataframe[numeric_row].std(), rnd)
-    var_n = _np.round(dataframe[numeric_row].var(), rnd)
-    skew = _np.round(dataframe[numeric_row].skew(), rnd)
-    kurto = _np.round(dataframe[numeric_row].kurt(), rnd)
-    
-    print("Standard Deviation (dispersion): {}".format(std_n))
-    print("Variance (spread out): {}".format(var_n))
-    print("Skewness (distortion or asymmetry): {}".format(skew))
-    print("Kurtosis (peakedness of a distribution): {}".format(kurto))
-    print("")
+    info_num(dataframe=dataframe, col_sel=numeric_col, rnd=rnd)
     df_notnan = dataframe.dropna()
 
-    _plt.style.use('seaborn-whitegrid')
-    fig = _plt.figure(figsize=(18,7)) 
-    _plt.subplot(1, 2, 1)
-    _sns.histplot(data=df_notnan, 
-                 x=numeric_row,
+    __plt.style.use('seaborn-whitegrid')
+    fig = __plt.figure(figsize=(18,7)) 
+    __plt.subplot(1, 2, 1)
+    __sns.histplot(data=df_notnan, 
+                 x=numeric_col,
                  palette="light:m_r",
                  edgecolor=".3",
                  linewidth=.5
     );
-    _plt.subplot(1, 2, 2)
-    _sns.histplot(data=df_notnan, 
-                  x=numeric_row,
+    __plt.xlabel("")
+    __plt.subplot(1, 2, 2)
+    __sns.histplot(data=df_notnan, 
+                  x=numeric_col,
                   hue=hue,
                   kde=True, 
                   log_scale=True,
@@ -496,9 +491,63 @@ def plot_distribution(dataframe, numeric_row, rnd=3, hue=None):
                   linewidth=.5,
                   multiple="stack"
     )
-    _plt.xlabel(numeric_row + " (logarithm)")
-    return _plt.show()
+    __plt.suptitle(numeric_col)
+    __plt.xlabel("(logarithm)")
+    return __plt.show()
 
+
+def info_num(dataframe, col_sel = None, rnd=2):
+    
+    data_num = dataframe.select_dtypes(include=[__np.number])
+    if len(data_num.columns) == 0:
+        print("The dataframe has no numeric values.")
+        return
+    
+    if col_sel:
+        try:
+            dataframe[col_sel].iloc[0]
+        except:
+            print("Column not found in dataframe.")
+            return
+        min_v = __np.round(dataframe[col_sel].min(), rnd)
+        max_v = __np.round(dataframe[col_sel].max(), rnd)
+        mean_v = __np.round(dataframe[col_sel].mean(), rnd)
+        med_v = __np.round(dataframe[col_sel].median(), rnd)
+        std_n = __np.round(dataframe[col_sel].std(), rnd)
+        var_n = __np.round(dataframe[col_sel].var(), rnd)
+        skew = __np.round(dataframe[col_sel].skew(), rnd)
+        kurto = __np.round(dataframe[col_sel].kurt(), rnd)
+
+        print("====", col_sel, "====")
+        print("Minimum: {}".format(min_v))
+        print("Maximum: {}".format(max_v))
+        print("Average: {}".format(mean_v))
+        print("Median: {}".format(med_v))
+        print("Standard Deviation (dispersion): {}".format(std_n))
+        print("Variance (spread out): {}".format(var_n))
+        print("Skewness (distortion or asymmetry): {}".format(skew))
+        print("Kurtosis (peakedness of a distribution): {}".format(kurto))
+        print("")
+    
+    else:
+        df_stats = __np.round(
+                        dataframe.apply(lambda x: [
+                                x.min(), 
+                                x.max(), 
+                                x.mean(),
+                                x.median(),
+                                x.std(),
+                                x.var(),
+                                x.skew(),
+                                x.kurt()
+                            ]).T
+                    , 2
+        )
+        
+        df_stats.columns = ["Minimum", "Maximum", "Average", "Median", 
+                            "Standard Deviation", "Variance", "Skewness", "Kurtosis"]
+        return(df_stats)
+    
 
 def normalize_row(dataframe):
     """
@@ -559,13 +608,13 @@ def outliers(dataframe, silent=False, n_round=2):
     for c in col_num:
         col = dataframe[c]
         n = len(col)
-        mean_x = _np.mean(col)
-        sd_x = _np.std(col)
+        mean_x = __np.mean(col)
+        sd_x = __np.std(col)
         numerator = max(abs(col-mean_x))
         g_calculated = numerator/sd_x
-        t_value = _stats.t.ppf(1 - 0.05 / (2 * n), n - 2)
-        g_ca = (n - 1) * _np.sqrt(_np.square(t_value))
-        g_cb = _np.sqrt(n) * _np.sqrt(n - 2 + _np.square(t_value))
+        t_value = __stats.t.ppf(1 - 0.05 / (2 * n), n - 2)
+        g_ca = (n - 1) * __np.sqrt(__np.square(t_value))
+        g_cb = __np.sqrt(n) * __np.sqrt(n - 2 + __np.square(t_value))
         g_critical = g_ca / g_cb
         
         if g_critical < g_calculated:
@@ -586,9 +635,9 @@ def outliers(dataframe, silent=False, n_round=2):
     for c in col_num:
         q1 = dataframe[c].quantile(0.25)
         q3 = dataframe[c].quantile(0.75)
-        log_vals = _np.log(_np.abs(dataframe[c]) + 1)
-        q1_l = _np.quantile(log_vals, 0.25)
-        q3_l = _np.quantile(log_vals, 0.75)
+        log_vals = __np.log(__np.abs(dataframe[c]) + 1)
+        q1_l = __np.quantile(log_vals, 0.25)
+        q3_l = __np.quantile(log_vals, 0.75)
         
         iqr = q3-q1
         outer_fence = 3 * iqr
@@ -606,9 +655,9 @@ def outliers(dataframe, silent=False, n_round=2):
         for index, x in enumerate(dataframe[c]):
             
             if x <= outer_fence_le or x >= outer_fence_ue:
-                outliers_prob.append(_np.round(x, n_round))
+                outliers_prob.append(__np.round(x, n_round))
         
-        filter_l = _np.where((log_vals <= outer_fence_le_l) 
+        filter_l = __np.where((log_vals <= outer_fence_le_l) 
                             | (log_vals >= outer_fence_ue_l), 
                             True, 
                             False
@@ -636,14 +685,14 @@ def outliers(dataframe, silent=False, n_round=2):
     title = 0
     for c in col_num:
         col = dataframe[c]
-        z_score = _stats.zscore(col, nan_policy="omit")
-        z_filter = _np.abs(z_score) > 3
-        if _np.sum(z_filter) != 0:
+        z_score = __stats.zscore(col, nan_policy="omit")
+        z_filter = __np.abs(z_score) > 3
+        if __np.sum(z_filter) != 0:
             if not silent:
                 if title == 0:
                     print("\n", "=== Z-Score method  ===")
                     title = 1
-                col_round = _np.round(col[z_filter], n_round)
+                col_round = __np.round(col[z_filter], n_round)
                 print(c, list(set(col_round)))
                 print(" ")
             out_list.append(c)
@@ -670,10 +719,10 @@ def outliers_graph(dataframe):
         return
     
     vals_norm = normalize_column(dataframe[cols])
-    _plt.figure(figsize=(14, len(cols) / 1.8))
-    _sns.set_style("whitegrid")
-    _sns.set(font_scale = 1.1)
-    ax = _sns.boxplot(data=vals_norm, orient="h", palette="Set2")
+    __plt.figure(figsize=(14, len(cols) / 1.8))
+    __sns.set_style("whitegrid")
+    __sns.set(font_scale = 1.1)
+    ax = __sns.boxplot(data=vals_norm, orient="h", palette="Set2")
     ax.set(xlabel='normalized values')
-    _plt.title("Outliers Found")
-    return _plt.show()
+    __plt.title("Outliers Found")
+    return __plt.show()
