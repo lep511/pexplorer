@@ -505,9 +505,9 @@ def info_num(dataframe, col_sel = None, rnd=2):
     
     if col_sel:
         try:
-            dataframe[col_sel].iloc[0]
+            dataframe[col_sel].dropna().abs()
         except:
-            print("Column not found in dataframe.")
+            print("Column not found in dataframe or it is not numeric.")
             return
         min_v = __np.round(dataframe[col_sel].min(), rnd)
         max_v = __np.round(dataframe[col_sel].max(), rnd)
@@ -530,8 +530,9 @@ def info_num(dataframe, col_sel = None, rnd=2):
         print("")
     
     else:
+        data_num = dataframe.select_dtypes(include=[__np.number])
         df_stats = __np.round(
-                        dataframe.apply(lambda x: [
+                        data_num.apply(lambda x: [
                                 x.min(), 
                                 x.max(), 
                                 x.mean(),
