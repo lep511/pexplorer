@@ -408,7 +408,7 @@ def grid_plot(dataframe, hue=None, save=None):
     ----------
     
     `dataframe:` (Pandas dataframe)
-    `hue:` (row name) ‎para graficar diferentes niveles con diferentes colores‎
+    `hue:` (row name) para graficar diferentes niveles con diferentes colores
     `save:` (nombre del archivo) si no se especifica no se guarda en el disco
     """
     n_df = dataframe.copy()
@@ -457,7 +457,7 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
     return __plt.show()
 
 
-def plot_distribution(dataframe, numeric_col, rnd=3, hue=None):
+def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -467,48 +467,58 @@ def plot_distribution(dataframe, numeric_col, rnd=3, hue=None):
     `dataframe` : (Pandas dataframe)
     `numeric_row` : variable numérica del dataframe
     """
-    info_num(dataframe=dataframe, col_sel=numeric_col, rnd=rnd)
-    df_notnan = dataframe.dropna()
+        
+    if __check_num(dataframe, numeric_col):
+        
+        info_num(dataframe=dataframe, col_sel=numeric_col, rnd=rnd)
+        
+        df_notnan = dataframe.dropna()
 
-    __plt.style.use('seaborn-whitegrid')
-    fig = __plt.figure(figsize=(18,7)) 
-    __plt.subplot(1, 2, 1)
-    __sns.histplot(data=df_notnan, 
-                 x=numeric_col,
-                 palette="light:m_r",
-                 edgecolor=".3",
-                 linewidth=.5
-    );
-    __plt.xlabel("")
-    __plt.subplot(1, 2, 2)
-    __sns.histplot(data=df_notnan, 
-                  x=numeric_col,
-                  hue=hue,
-                  kde=True, 
-                  log_scale=True,
-                  palette="light:m_r",
-                  edgecolor=".3",
-                  linewidth=.5,
-                  multiple="stack"
-    )
-    __plt.suptitle(numeric_col)
-    __plt.xlabel("(logarithm)")
-    return __plt.show()
+        __plt.style.use('seaborn-whitegrid')
+        fig = __plt.figure(figsize=(18,7)) 
+        __plt.subplot(1, 2, 1)
+        __sns.histplot(data=df_notnan, 
+                    x=numeric_col,
+                    palette="light:m_r",
+                    edgecolor=".3",
+                    linewidth=.5
+        );
+        __plt.xlabel("")
+        __plt.subplot(1, 2, 2)
+        __sns.histplot(data=df_notnan, 
+                    x=numeric_col,
+                    hue=hue,
+                    kde=True, 
+                    log_scale=True,
+                    palette="light:m_r",
+                    edgecolor=".3",
+                    linewidth=.5,
+                    multiple="stack"
+        )
+        __plt.suptitle(numeric_col)
+        __plt.xlabel("(logarithm)")
+        __plt.show()
+    
+    else:
+        print("Column {} not found in dataframe or it is not numeric.".format(numeric_col))
+
+    return
 
 
-def info_num(dataframe, col_sel = None, rnd=2):
+def info_num(dataframe, col_sel=None, rnd=2):
     
     data_num = dataframe.select_dtypes(include=[__np.number])
+    
     if len(data_num.columns) == 0:
         print("The dataframe has no numeric values.")
         return
-    
+
     if col_sel:
-        try:
-            dataframe[col_sel].dropna().abs()
-        except:
-            print("Column not found in dataframe or it is not numeric.")
+        if not __check_num(dataframe, col_sel):
+            print("Column {} not found in dataframe or it is not numeric.".format(col_sel))
             return
+        
+    
         min_v = __np.round(dataframe[col_sel].min(), rnd)
         max_v = __np.round(dataframe[col_sel].max(), rnd)
         mean_v = __np.round(dataframe[col_sel].mean(), rnd)
@@ -546,7 +556,7 @@ def info_num(dataframe, col_sel = None, rnd=2):
         )
         
         df_stats.columns = ["Minimum", "Maximum", "Average", "Median", 
-                            "Standard Deviation", "Variance", "Skewness", "Kurtosis"]
+                            "Std. Dev.", "Variance", "Skewness", "Kurtosis"]
         return(df_stats)
     
 
@@ -727,3 +737,14 @@ def outliers_graph(dataframe):
     ax.set(xlabel='normalized values')
     __plt.title("Outliers Found")
     return __plt.show()
+
+
+def __check_num(dataframe, col):
+    
+    try:
+        if __np.issubdtype(dataframe[col], __np.number):
+            return True
+        else:
+            return False
+    except:
+        return False
