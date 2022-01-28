@@ -473,6 +473,8 @@ def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
         info_num(dataframe=dataframe, col_sel=numeric_col, rnd=rnd)
         
         df_notnan = dataframe.dropna()
+        val_log = __np.log10(df_notnan[numeric_col])
+        val_log = val_log[__np.isfinite]
 
         __plt.style.use('seaborn-whitegrid')
         fig = __plt.figure(figsize=(18,7)) 
@@ -485,11 +487,9 @@ def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
         );
         __plt.xlabel("")
         __plt.subplot(1, 2, 2)
-        __sns.histplot(data=df_notnan, 
-                    x=numeric_col,
+        __sns.histplot(val_log,
                     hue=hue,
                     kde=True, 
-                    log_scale=True,
                     palette="light:m_r",
                     edgecolor=".3",
                     linewidth=.5,
