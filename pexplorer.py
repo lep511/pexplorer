@@ -563,7 +563,7 @@ def info_num(dataframe, col_sel=None, rnd=2):
             print("Column {} not found in dataframe or it is not numeric.".format(col_sel))
             return
         
-    
+        count_v = __np.sum(dataframe[col_sel].notna())
         min_v = __np.round(dataframe[col_sel].min(), rnd)
         max_v = __np.round(dataframe[col_sel].max(), rnd)
         mean_v = __np.round(dataframe[col_sel].mean(), rnd)
@@ -574,6 +574,7 @@ def info_num(dataframe, col_sel=None, rnd=2):
         kurto = __np.round(dataframe[col_sel].kurt(), rnd)
 
         print("====", col_sel, "====")
+        print("Count: {}".format(count_v))
         print("Minimum: {}".format(min_v))
         print("Maximum: {}".format(max_v))
         print("Average: {}".format(mean_v))
@@ -588,6 +589,7 @@ def info_num(dataframe, col_sel=None, rnd=2):
         data_num = dataframe.select_dtypes(include=[__np.number])
         df_stats = __np.round(
                         data_num.apply(lambda x: [
+                                x.count(),
                                 x.min(), 
                                 x.max(), 
                                 x.mean(),
@@ -600,7 +602,7 @@ def info_num(dataframe, col_sel=None, rnd=2):
                     , 2
         )
         
-        df_stats.columns = ["Minimum", "Maximum", "Average", "Median", 
+        df_stats.columns = ["Count", "Minimum", "Maximum", "Average", "Median", 
                             "Std. Dev.", "Variance", "Skewness", "Kurtosis"]
         return(df_stats)
     
