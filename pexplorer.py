@@ -445,7 +445,7 @@ def correlation(dataframe: __pd.DataFrame):
     return __plt.show()
 
 
-def grid_plot(dataframe: __pd.DataFrame, hue=None: str, save=None: bool):
+def grid_plot(dataframe: __pd.DataFrame, hue:str = None, save:bool = False):
     """
     Trazado de cuadrículas estructuradas de varios gráficos
     
