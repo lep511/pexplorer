@@ -11,6 +11,12 @@ __warnings.filterwarnings("ignore")
 
 
 def check_df(dataframe):
+    """
+    Analyze an dataframe to display a summary of statistics.
+
+    Args:
+        dataframe: Pandas dataframe
+    """
     
     df = dataframe.copy()
     
@@ -135,9 +141,15 @@ def check_df(dataframe):
 
 def col_rename(dataframe, inplace=False):
     """
-    Cambia todos los nombres de las columnas
-    a minúsculas, elimina espacios en blancos
-    por _, lo mismo hace con . , :
+    Change all column names to lowercase, 
+    remove whitespace for _, do the same with . , :
+
+    Args:
+        dataframe: Pandas dataframe
+        inplace (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        col_newname [list]: New column names.
     """
     col_newname = dict()
     
@@ -164,6 +176,17 @@ def col_rename(dataframe, inplace=False):
 
 
 def make_cat(dataframe, percent=5, exclude=[]):
+    """
+    Convert columns that meet certain requirements to categorical.
+
+    Args:
+        dataframe: Pandas dataframe
+        percent (int, optional): % tolerance. Defaults to 5.
+        exclude (list, optional): Columns to exclude. Defaults to [].
+
+    Returns:
+        dataframe: Pandas dataframe
+    """
     
     n_df = dataframe.copy()
     is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
@@ -211,8 +234,11 @@ def make_cat(dataframe, percent=5, exclude=[]):
 
 def glimpse(dataframe):
     """
-    Similar a la función glimpse de R. Muestra el nombre de cada
-    columna, con su dtype y los valores únicos.
+    Similar to R glimpse function. Shows the name of each column, 
+    with its dtype and unique values.
+    
+    Args:
+        dataframe: Pandas dataframe
     """
     rows_n = f"{dataframe.shape[0]:,}"
     print("Rows: {}".format(rows_n))
@@ -296,27 +322,27 @@ def clean_nan(dataframe, percent=0.9):
 
 def any_value(df, search):
     """
-    Realiza una búsqueda de un valor en todo el dataframe
+    Performs a search for a value in the entire dataframe.
 
     Args:
-        df (datafrane): dataframe donde buscar
-        search: elemento a buscar
+        df (datafrane): Pandas dataframe
+        search: item to search
 
     Returns:
-        dataframe: dataframe con la busqueda
+        dataframe: dataframe filtered with search
     """
     return df[df.eq(search).any(1)]
 
 
 def missing_values(df):
     """
-    Chquea todas las columnas y devuelve el número de valores nulos.
+    Check all columns and return the number of null values.
 
     Args:
-        df (dataframe): dataframe a analizar
+        dataframe: Pandas dataframe
 
     Returns:
-        dataframe: tabla con la cantidad de valores nulos.
+        dataframe: table with the number of null values.
     
     credit: https://www.kaggle.com/willkoehrsen/start-here-a-gentle-introduction
     """
@@ -352,10 +378,16 @@ def missing_values(df):
 
 def split_values(dataframe):
     """
-    Devuelve dos dataframes, uno solo con valores númericos y el otro solo
-    con valores categóricos.
+    Returns two dataframes, one with only numeric values
+    and the other with only categorical values.
     
-    ### Ejemplo:
+    Args:
+        dataframe: Pandas dataframe
+
+    Returns:
+        tuple: two dataframes.
+        
+    ### Example:
     
     data_num, data_cat = split_values(df)
     """
@@ -368,7 +400,13 @@ def split_values(dataframe):
 
 def memory_size(dataframe):
     """
-    Devuelve el tamaño que ocupa en memoria el dataframe.
+    Returns the size that the dataframe occupies in memory.
+    
+    Args:
+        dataframe: Pandas dataframe
+
+    Returns:
+        info (str): size in MB.
     """
     size_bytes = dataframe.memory_usage().sum()
     if size_bytes == 0:
@@ -381,7 +419,13 @@ def memory_size(dataframe):
 
 
 def correlation(dataframe):
-    
+    """
+    Plotting a diagonal correlation matrix
+
+    Args:
+        dataframe: Pandas dataframe
+    """
+    __sns.set_theme(style="white")
     # Compute the correlation matrix
     corr = dataframe.corr()
     
@@ -402,7 +446,8 @@ def correlation(dataframe):
 
 
 def grid_plot(dataframe, hue=None, save=None):
-    """Trazado de cuadrículas estructuradas de varios gráficos
+    """
+    Trazado de cuadrículas estructuradas de varios gráficos
     
     Parámetros
     ----------
@@ -637,9 +682,8 @@ def outliers(dataframe, silent=False, n_round=2):
                 print(c)
     
     # Tukey's method
-    """
-    credits: https://gist.github.com/alice203
-    """
+    # credits: https://gist.github.com/alice203
+    
     title = 0
     outliers_prob = []
     
@@ -722,7 +766,7 @@ def outliers_graph(dataframe):
     Plots the outliers found in the data frame.
 
     Args:
-        dataframe: Pandas.dataframe
+        dataframe: Pandas dataframe
     """
     cols = outliers(dataframe, silent=True)
     if not cols:
@@ -740,7 +784,16 @@ def outliers_graph(dataframe):
 
 
 def __check_num(dataframe, col):
-    
+    """
+    Check if a column is numeric.    
+
+    Args:
+        dataframe: Pandas dataframe
+        col (str): column name
+
+    Returns:
+        [bool]: True if it is numeric or false if it is not.
+    """
     try:
         if __np.issubdtype(dataframe[col], __np.number):
             return True
