@@ -10,11 +10,11 @@ import warnings as __warnings
 __warnings.filterwarnings("ignore")
 
 
-def check_df(dataframe):
+def check_df(dataframe: __pd.DataFrame):
     """
     Analyze an dataframe to display a summary of statistics.
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
     """
     
@@ -139,16 +139,16 @@ def check_df(dataframe):
     return df_new.style.background_gradient(cmap=cm).set_caption(text_indx)
 
 
-def col_rename(dataframe, inplace=False):
+def col_rename(dataframe: __pd.DataFrame, inplace=False):
     """
     Change all column names to lowercase, 
     remove whitespace for _, do the same with . , :
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
         inplace (bool, optional): [description]. Defaults to False.
 
-    Returns:
+    #### Returns:
         col_newname [list]: New column names.
     """
     col_newname = dict()
@@ -175,16 +175,16 @@ def col_rename(dataframe, inplace=False):
 
 
 
-def make_cat(dataframe, percent=5, exclude=[]):
+def make_cat(dataframe: __pd.DataFrame, percent=5, exclude=[]):
     """
     Convert columns that meet certain requirements to categorical.
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
         percent (int, optional): % tolerance. Defaults to 5.
         exclude (list, optional): Columns to exclude. Defaults to [].
 
-    Returns:
+    #### Returns:
         dataframe: Pandas dataframe
     """
     
@@ -232,12 +232,12 @@ def make_cat(dataframe, percent=5, exclude=[]):
     return dataframe
 
 
-def glimpse(dataframe):
+def glimpse(dataframe: __pd.DataFrame):
     """
     Similar to R glimpse function. Shows the name of each column, 
     with its dtype and unique values.
     
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
     """
     rows_n = f"{dataframe.shape[0]:,}"
@@ -248,7 +248,7 @@ def glimpse(dataframe):
     return glimpse_df
 
 
-def check_cat(dataframe, percent=5):
+def check_cat(dataframe: __pd.DataFrame, percent=5):
     
     n_df = dataframe.copy()
     is_num = n_df.apply(lambda s: __pd.to_numeric(s, errors='coerce').notnull().all())
@@ -284,7 +284,7 @@ def check_cat(dataframe, percent=5):
     return print("No hay columnas recomendadas para convertir.")
         
 
-def clean_nan(dataframe, percent=0.9):
+def clean_nan(dataframe: __pd.DataFrame, percent=0.9):
     
     n_df = dataframe.copy()
     cols = []
@@ -320,37 +320,37 @@ def clean_nan(dataframe, percent=0.9):
     return n_df
 
 
-def any_value(df, search):
+def any_value(dataframe: __pd.DataFrame, search):
     """
     Performs a search for a value in the entire dataframe.
 
-    Args:
-        df (datafrane): Pandas dataframe
+    #### Args:
+        dataframe: Pandas dataframe
         search: item to search
 
-    Returns:
+    #### Returns:
         dataframe: dataframe filtered with search
     """
-    return df[df.eq(search).any(1)]
+    return dataframe[dataframe.eq(search).any(1)]
 
 
-def missing_values(df):
+def missing_values(dataframe: __pd.DataFrame):
     """
     Check all columns and return the number of null values.
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
 
-    Returns:
+    #### Returns:
         dataframe: table with the number of null values.
     
     credit: https://www.kaggle.com/willkoehrsen/start-here-a-gentle-introduction
     """
     # Total missing values
-    mis_val = df.isnull().sum()
+    mis_val = dataframe.isnull().sum()
     
     # Percentage of missing values
-    mis_val_percent = mis_val / len(df)
+    mis_val_percent = mis_val / len(dataframe)
     
     # Make a table with the results
     mis_val_table = __pd.concat([mis_val, mis_val_percent], axis=1)
@@ -365,7 +365,7 @@ def missing_values(df):
     '% of Total Values', ascending=False).round(2)
     
     # Print some summary information
-    print ("Your selected dataframe has " + str(df.shape[1]) + " columns.\n"      
+    print ("Your selected dataframe has " + str(dataframe.shape[1]) + " columns.\n"      
         "There are " + str(mis_val_table_ren_columns.shape[0]) +
             " columns that have missing values.")
     
@@ -376,20 +376,20 @@ def missing_values(df):
     return
 
 
-def split_values(dataframe):
+def split_values(dataframe: __pd.DataFrame):
     """
     Returns two dataframes, one with only numeric values
     and the other with only categorical values.
     
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
 
-    Returns:
+    #### Returns:
         tuple: two dataframes.
         
-    ### Example:
+    #### Example:
     
-    data_num, data_cat = split_values(df)
+    >>> data_num, data_cat = split_values(df)
     """
               
     data_num = dataframe.select_dtypes(include=[__np.number])
@@ -398,14 +398,14 @@ def split_values(dataframe):
     return data_num, data_cat
 
 
-def memory_size(dataframe):
+def memory_size(dataframe: __pd.DataFrame):
     """
     Returns the size that the dataframe occupies in memory.
     
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
 
-    Returns:
+    #### Returns:
         info (str): size in MB.
     """
     size_bytes = dataframe.memory_usage().sum()
@@ -418,11 +418,11 @@ def memory_size(dataframe):
     return "{} {}".format(s, size_name[i])
 
 
-def correlation(dataframe):
+def correlation(dataframe: __pd.DataFrame):
     """
     Plotting a diagonal correlation matrix
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
     """
     __sns.set_theme(style="white")
@@ -445,7 +445,7 @@ def correlation(dataframe):
     return __plt.show()
 
 
-def grid_plot(dataframe, hue=None, save=None):
+def grid_plot(dataframe: __pd.DataFrame, hue=None: str, save=None: bool):
     """
     Trazado de cuadrículas estructuradas de varios gráficos
     
@@ -481,7 +481,7 @@ def grid_plot(dataframe, hue=None, save=None):
     return __plt.show()
 
 
-def plot_numcat(dataframe, numeric_col, categoric_col):
+def plot_numcat(dataframe: __pd.DataFrame, numeric_col, categoric_col):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -502,7 +502,7 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
     return __plt.show()
 
 
-def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
+def plot_distribution(dataframe: __pd.DataFrame, numeric_col, rnd=2, hue=None):
     """
     Trazado de un gráfico para una variable numérica y otra categórica
 
@@ -550,7 +550,7 @@ def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
     return
 
 
-def info_num(dataframe, col_sel=None, rnd=2):
+def info_num(dataframe: __pd.DataFrame, col_sel=None, rnd=2):
     
     data_num = dataframe.select_dtypes(include=[__np.number])
     
@@ -605,7 +605,7 @@ def info_num(dataframe, col_sel=None, rnd=2):
         return(df_stats)
     
 
-def normalize_row(dataframe):
+def normalize_row(dataframe: __pd.DataFrame):
     """
     Normalizes the values of a given dataframe 
     by the total sum of each line.
@@ -619,7 +619,7 @@ def normalize_row(dataframe):
     return df_c
 
 
-def normalize_column(dataframe, percent=True):
+def normalize_column(dataframe: __pd.DataFrame, percent=True):
     """
     Normalizes the values of a given dataframe by the total sum 
     of each column. If percent=True (default), multiplies the final 
@@ -640,16 +640,16 @@ def normalize_column(dataframe, percent=True):
     return df_c
 
 
-def outliers(dataframe, silent=False, n_round=2):
+def outliers(dataframe: __pd.DataFrame, silent=False, n_round=2):
     """
     Grubbs' test, also called the ESD method (extreme studentized deviate), 
     to determine if any of the columns contain outliers.
 
-    Args:
+    #### Args:
         dataframe (Pandas.dataframe)
         alpha (float, optional): Significance level. Defaults to 0.05.
 
-    Returns:
+    #### Returns:
         list: List of columns with outliers values
     """  
     out_list = []
@@ -761,11 +761,11 @@ def outliers(dataframe, silent=False, n_round=2):
         return
     
     
-def outliers_graph(dataframe):
+def outliers_graph(dataframe: __pd.DataFrame):
     """
     Plots the outliers found in the data frame.
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
     """
     cols = outliers(dataframe, silent=True)
@@ -783,15 +783,15 @@ def outliers_graph(dataframe):
     return __plt.show()
 
 
-def __check_num(dataframe, col):
+def __check_num(dataframe: __pd.DataFrame, col):
     """
     Check if a column is numeric.    
 
-    Args:
+    #### Args:
         dataframe: Pandas dataframe
         col (str): column name
 
-    Returns:
+    #### Returns:
         [bool]: True if it is numeric or false if it is not.
     """
     try:
