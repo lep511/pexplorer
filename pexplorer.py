@@ -502,16 +502,7 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
     return __plt.show()
 
 
-def plot_distribution(dataframe, numeric_col, rnd=2, hue=None):
-    """
-    Trazado de un gráfico para una variable numérica y otra categórica
-
-    Parámetros
-    ----------
-    
-    `dataframe` : (Pandas dataframe)
-    `numeric_row` : variable numérica del dataframe
-    """
+def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
         
     if __check_num(dataframe, numeric_col):
         
@@ -796,6 +787,29 @@ def outliers_graph(dataframe):
     return __plt.show()
 
 
+def plot_distribution(dataframe, norm=True, exclude=None):
+    df_c = dataframe
+    df_n = df_c._get_numeric_data()
+    cols = df_n.columns.to_list()
+    
+    if exclude: df_n = df_n.drop(columns = exclude)
+        
+    if norm:
+        vals_norm = normalize_column(df_n)
+        text_n = "normalized values"
+    else:
+        vals_norm = df_n
+        text_n = ""
+            
+    __plt.figure(figsize=(14, len(cols) / 1.8))
+    __sns.set_style("whitegrid")
+    __sns.set(font_scale = 1.1)
+    ax = __sns.boxplot(data=vals_norm, orient="h", palette="Set2")
+    ax.set(xlabel=text_n)
+    __plt.title("Data Distribution")
+    return __plt.show()
+    
+    
 def __check_num(dataframe, col):
     """
     Check if a column is numeric.    
