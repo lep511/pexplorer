@@ -502,6 +502,26 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
     return __plt.show()
 
 
+def plot_categorical(dataframe, indx, col, hue=None):
+    """[summary]
+
+    Args:
+        dataframe (Pandas.dataframe): dataframe
+        indx (string): Categorical index column
+        col (string): Categorical column
+        hue (string, optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
+    data_cat = __pd.crosstab(index=dataframe[indx], columns=dataframe[col])
+    g = __sns.catplot(x=indx, y=col, col=hue,
+                data=dataframe, saturation=.5,
+                kind="bar", ci=None, aspect=.8)
+    __plt.show()
+    return data_cat
+
+
 def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
         
     if __check_num(dataframe, numeric_col):
