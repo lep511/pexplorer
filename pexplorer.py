@@ -783,7 +783,7 @@ def outliers_graph(dataframe):
         lencol = len(cols) / 1.8
         
     vals_norm = normalize_column(dataframe[cols])
-    __plt.figure(figsize=(14, lencol)
+    __plt.figure(figsize=(14, lencol))
     __sns.set_style("whitegrid")
     __sns.set(font_scale = 1.1)
     ax = __sns.boxplot(data=vals_norm, orient="h", palette="Set2")
