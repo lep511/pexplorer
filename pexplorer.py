@@ -503,11 +503,17 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
 
 
 def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
-        
-    if __check_num(dataframe, numeric_col):
-        
-        info_num(dataframe=dataframe, col_sel=numeric_col, rnd=rnd)
-        
+    
+    data_num = dataframe.select_dtypes(include=[__np.number])
+    
+    if len(data_num.columns) == 0:
+        print("The dataframe has no numeric values.")
+        return
+    
+    for c in data_num.columns:
+    
+        info_num(dataframe=dataframe, col_sel=c, rnd=rnd)
+
         df_notnan = dataframe.dropna()
         val_log = __np.log10(df_notnan[numeric_col])
         val_log = val_log[__np.isfinite]
@@ -534,9 +540,6 @@ def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
         __plt.suptitle(numeric_col)
         __plt.xlabel("(logarithm)")
         __plt.show()
-    
-    else:
-        print("Column {} not found in dataframe or it is not numeric.".format(numeric_col))
 
     return
 
