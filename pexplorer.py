@@ -795,8 +795,8 @@ def outliers_graph(dataframe):
 def plot_distribution(dataframe, norm=True, exclude=None):
     df_c = dataframe
     df_n = df_c._get_numeric_data()
-    cols = df_n.columns.to_list()
     df_n = df_n.drop(columns = exclude) if exclude else df_n
+    cols = df_n.columns.to_list()
     
     if len(cols) == 0:
         print("Dataframe has no numeric values.")
