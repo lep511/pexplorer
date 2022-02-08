@@ -502,7 +502,7 @@ def plot_numcat(dataframe, numeric_col, categoric_col):
     return __plt.show()
 
 
-def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
+def plot_distribution_col(dataframe, rnd=2, hue=None):
     
     data_num = dataframe.select_dtypes(include=[__np.number])
     
@@ -515,14 +515,14 @@ def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
         info_num(dataframe=dataframe, col_sel=c, rnd=rnd)
 
         df_notnan = dataframe.dropna()
-        val_log = __np.log10(df_notnan[numeric_col])
+        val_log = __np.log10(df_notnan[c])
         val_log = val_log[__np.isfinite]
 
         __plt.style.use('seaborn-whitegrid')
         fig = __plt.figure(figsize=(18,7)) 
         __plt.subplot(1, 2, 1)
         __sns.histplot(data=df_notnan, 
-                    x=numeric_col,
+                    x=c,
                     palette="light:m_r",
                     edgecolor=".3",
                     linewidth=.5
@@ -537,7 +537,7 @@ def plot_distribution_col(dataframe, numeric_col, rnd=2, hue=None):
                     linewidth=.5,
                     multiple="stack"
         )
-        __plt.suptitle(numeric_col)
+        __plt.suptitle(c)
         __plt.xlabel("(logarithm)")
         __plt.show()
 
