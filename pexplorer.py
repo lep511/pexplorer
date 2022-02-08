@@ -777,8 +777,13 @@ def outliers_graph(dataframe):
         print("Outliers not found in dataframe")
         return
     
+    if len(cols) < 4:
+        lencol = 3
+    else:
+        lencol = len(cols) / 1.8
+        
     vals_norm = normalize_column(dataframe[cols])
-    __plt.figure(figsize=(14, len(cols) / 1.8))
+    __plt.figure(figsize=(14, lencol)
     __sns.set_style("whitegrid")
     __sns.set(font_scale = 1.1)
     ax = __sns.boxplot(data=vals_norm, orient="h", palette="Set2")
@@ -800,8 +805,13 @@ def plot_distribution(dataframe, norm=True, exclude=None):
     else:
         vals_norm = df_n
         text_n = ""
-            
-    __plt.figure(figsize=(14, len(cols) / 1.8))
+    
+    if len(cols) < 4:
+        lencol = 3
+    else:
+        lencol = len(cols) / 1.8
+        
+    __plt.figure(figsize=(14, lencol))
     __sns.set_style("whitegrid")
     __sns.set(font_scale = 1.1)
     ax = __sns.boxplot(data=vals_norm, orient="h", palette="Set2")
