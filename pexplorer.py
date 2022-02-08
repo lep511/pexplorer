@@ -515,7 +515,7 @@ def plot_distribution_col(dataframe, rnd=2, hue=None):
         info_num(dataframe=dataframe, col_sel=c, rnd=rnd)
 
         df_notnan = dataframe.dropna()
-        val_log = __np.log10(df_notnan[c])
+        val_log = __np.log10(df_notnan[c].abs())
         val_log = val_log[__np.isfinite]
 
         __plt.style.use('seaborn-whitegrid')
