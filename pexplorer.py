@@ -395,6 +395,16 @@ def split_values(dataframe):
     return data_num, data_cat
 
 
+def __conv_bytes(size_bytes):
+    if size_bytes == 0:
+        return "0B"
+    size_name = ("Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(__math.floor(__math.log(size_bytes, 1024)))
+    p = __math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return "{} {}".format(s, size_name[i])
+
+
 def memory_size(dataframe):
     """
     Returns the size that the dataframe occupies in memory.
@@ -406,15 +416,13 @@ def memory_size(dataframe):
         info (str): size in MB.
     """
     size_bytes = dataframe.memory_usage().sum()
-    if size_bytes == 0:
-        return "0B"
-    size_name = ("Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(__math.floor(__math.log(size_bytes, 1024)))
-    p = __math.pow(1024, i)
-    s = round(size_bytes / p, 2)
-    return "{} {}".format(s, size_name[i])
-
-
+    total_mem = __conv_bytes(size_bytes)
+    d_mem = dataframe.memory_usage().to_frame()
+    
+    print("Total memory usage: {}".format(total_mem))
+    return d_mem[0].apply(lambda x: __conv_bytes(x)).to_frame().rename(columns={0: "Memory usage"})
+    
+    
 def correlation(dataframe):
     """
     Plotting a diagonal correlation matrix
