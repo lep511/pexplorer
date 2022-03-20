@@ -493,7 +493,8 @@ def correlation_col(dataframe, col_name):
     heatmap = __sns.heatmap(dataframe.corr()[[col_name]].sort_values(by=col_name, ascending=False)[1:], 
                                         vmin=-1, 
                                         vmax=1, 
-                                        annot=True, 
+                                        annot=True,
+                                        fmt='.2%',
                                         cmap='BrBG'
     )
     heatmap.set_title(f'Features Correlating with {col_name}', fontdict={'fontsize':18}, pad=14)
