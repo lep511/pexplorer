@@ -373,6 +373,26 @@ def missing_values(dataframe):
     return
 
 
+def missing_graph(dataframe):
+    """
+    Check all columns and return a graph of null values.
+
+    Args:
+        dataframe: Pandas dataframe
+
+    Returns:
+    """
+    lencol = len(dataframe.columns)
+    if lencol < 4:
+        lencol = 3
+    else:
+        lencol = lencol / 1.2
+    __plt.figure(figsize=(lencol,8))
+    __sns.heatmap(dataframe.isna(), cmap='Greys', cbar=False)
+    __plt.xticks(rotation=60)
+    return __plt.show()
+
+
 def split_values(dataframe):
     """
     Returns two dataframes, one with only numeric values
@@ -423,7 +443,7 @@ def memory_size(dataframe):
     return d_mem[0].apply(lambda x: __conv_bytes(x)).to_frame().rename(columns={0: "Memory usage"})
     
     
-def correlation(dataframe):
+def correlation_all(dataframe):
     """
     Plotting a diagonal correlation matrix
 
@@ -455,6 +475,29 @@ def correlation(dataframe):
         cbar_kws={"shrink": 0.5},
     )
 
+    return __plt.show()
+
+
+def correlation_col(dataframe, col_name):
+    """
+    Plot a correlation matrix based on a column. 
+
+    Args:
+        dataframe: Pandas dataframe
+    """
+    if not col_name in dataframe.columns.to_list():
+        print(f"Column {col_name} is not found in the dataframe.")
+        return
+    lencols = len(dataframe.corr()[[col_name]])
+    __plt.figure(figsize=(4, lencols * 1.6))
+    heatmap = __sns.heatmap(dataframe.corr()[[col_name]].sort_values(by=col_name, ascending=False)[1:], 
+                                        vmin=-1, 
+                                        vmax=1, 
+                                        annot=True, 
+                                        cmap='BrBG'
+    )
+    heatmap.set_title(f'Features Correlating with {col_name}', fontdict={'fontsize':18}, pad=14)
+    __plt.yticks(rotation=30)
     return __plt.show()
 
 
