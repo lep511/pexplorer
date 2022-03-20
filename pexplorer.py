@@ -490,14 +490,15 @@ def correlation_col(dataframe, col_name):
         return
     lencols = len(dataframe.corr()[[col_name]])
     __plt.figure(figsize=(4, lencols * 1.6))
-    heatmap = __sns.heatmap(dataframe.corr()[[col_name]].sort_values(by=col_name, ascending=False)[1:], 
+    df_c = dataframe.dropna().corr()
+    heatmap = __sns.heatmap(df_c[[col_name]].sort_values(by=col_name, ascending=False)[1:], 
                                         vmin=-1, 
                                         vmax=1, 
                                         annot=True,
                                         fmt='.2%',
                                         cmap='BrBG'
     )
-    heatmap.set_title(f'Features Correlating with {col_name}', fontdict={'fontsize':18}, pad=14)
+    heatmap.set_title(f'Features Correlating with {col_name}', fontdict={'fontsize':16}, pad=14)
     __plt.yticks(rotation=30)
     return __plt.show()
 
