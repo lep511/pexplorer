@@ -574,6 +574,8 @@ def plot_distribution_col(dataframe, col=None, rnd=2, hue=None):
         df_notnan = dataframe.dropna()
         val_log = __np.log10(df_notnan[c].abs())
         val_log = val_log[__np.isfinite]
+        iq_25 = __np.quantile(dataframe[col].dropna(), 0.25)
+        iq_75 = __np.quantile(dataframe[col].dropna(), 0.75)
 
         __plt.style.use("seaborn-whitegrid")
         fig = __plt.figure(figsize=(18, 7))
@@ -581,6 +583,7 @@ def plot_distribution_col(dataframe, col=None, rnd=2, hue=None):
         __sns.histplot(
             data=df_notnan, x=c, palette="light:m_r", edgecolor=".3", linewidth=0.5
         )
+        __plt.gca().axvspan(iq_25, iq_75, alpha=0.1, color='green')
         __plt.xlabel("")
         __plt.subplot(1, 2, 2)
         __sns.histplot(
