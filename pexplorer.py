@@ -152,7 +152,8 @@ def col_rename(dataframe, inplace=False):
     for elem in dataframe.columns:
 
         col_n = elem
-        col_n = "_".join(__re.findall("[A-Z][a-z]*", col_n))
+        if not col_n.isupper():
+            col_n = "_".join(__re.findall("[A-Z][a-z][a-z]*", col_n))
         col_n = col_n.lower()
         col_n = col_n.strip()
         col_n = col_n.replace(",", "_")
