@@ -4,3 +4,9 @@
 *.pyc
 *.pyc
 *.pyc
+.idea/vcs.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/pexplorer.iml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/aws.xml
