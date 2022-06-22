@@ -96,10 +96,13 @@ def check_df(dataframe):
             val_50.append("-")
             val_75.append("-")
 
-            val_unic_temp = df[feature].unique().tolist()
+            try:
+                val_unic_temp = df[feature].unique().tolist()
+            except:
+                val_unic_temp = []
             bi_temp = "-"
 
-            if len(val_unic_temp) < 4:
+            if len(val_unic_temp) > 0 and len(val_unic_temp) < 4:
 
                 bin_lst = df[feature].dropna().unique().tolist()
 
