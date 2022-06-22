@@ -19,7 +19,7 @@ def check_df(dataframe):
         dataframe: Pandas dataframe
     """
 
-    df = dataframe.copy()
+    df = dataframe.copy().reset_index()
 
     df_drop = df.dropna()
     is_num = df_drop.apply(
@@ -36,7 +36,10 @@ def check_df(dataframe):
         col_names.append(feature)
         v_type.append(str(df[feature].dtype))
 
-        count_uniq.append(len(df[feature].unique()))
+        try:
+            count_uniq.append(len(df[feature].unique()))
+        except:
+            count_uniq.append(0)
         val_n = df[feature].isnull().sum() / len_df
         v_null.append(val_n)
         is_bool = __pd.api.types.is_bool_dtype(df[feature])
